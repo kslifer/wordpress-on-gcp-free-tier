@@ -45,7 +45,7 @@ Media storage and request processing is offloaded to Cloud Storage through the [
 Head on over to the [Install Guide](INSTALL.md) for step by step instructions.
 
 But please **do this first**:
-- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely long term storage of your variables.conf file)
+- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your variables.conf file)
 - Download the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site into the wordpress-themes folder
 - Download the [plugins](https://wordpress.org/plugins/) that you intend to use on the site into the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
