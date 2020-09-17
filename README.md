@@ -65,7 +65,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 ## Maintenance
 - The Container Registry image history needs to be maintained, since it's charged as Cloud Storage consumption. This is purely a cost management motion.
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but the Cloud NAT will need to be re-enabled to allow external communication.
-- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are performed through the CI/CD pipeline instead of the Wordpress Dashboard. This will require occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service.
+- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are performed through the CI/CD pipeline instead of the Wordpress Dashboard. This will require occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service - a task that could be automated in the pipeline with [WP-CLI](https://wp-cli.org/).
   - Updates to the Wordpress core also require a change to the Dockerfile to pull the new upstream image.
 
 
