@@ -56,7 +56,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 
 ## Limitations and Future Considerations
-- The WP Stateless plugin has been intentionally downgraded to version 2.3.2. Version 3.0 isn't working, and I'm not convinced that it's me. It will show up in the Wordpress Dashboard as in need of an upgrade until it's addressed in the origin repo.
+- The WP Stateless plugin has been intentionally downgraded to version 2.3.2. Version 3.0 was a very buggy rollout that broke my site. It will show up in the Wordpress Dashboard as in need of an upgrade until it's tested in the origin repo.
 - There are no performance or availability guarantees. This runs in a single GCP region with a database that has minimal resources to draw from. Since it's immutable, server-side caching isn't possible. Given those constraints, it's surprisingly performant. The weak link is the database server.
 - Multiple SDLC environments aren't supported out of the box. Monorepo principles are followed, with the exclusion of the Wordpress dependencies.
 - This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN and moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
