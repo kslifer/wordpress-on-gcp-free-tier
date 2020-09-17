@@ -1,0 +1,6 @@
+# Wordpress Themes
+Download [theme zip files](https://wordpress.org/themes/) from Wordpress, then place them in this directory and in your repo.
+
+The build script will unpack and inject them into the final Wordpress image.
+
+It assumes that each zip file contains a unique theme; avoid multiple versions of the same theme.
