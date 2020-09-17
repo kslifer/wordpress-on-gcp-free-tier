@@ -15,13 +15,13 @@ Run `gcloud auth login` to ensure that your Cloud Shell session is properly auth
 
 Finally, clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
-    git clone https://oauthtoken@github.com/username/wordpress-on-gcp-free-tier.git
+    git clone https://oauthtoken@github.com/username/wordpress-on-gcp-free-tier-yourdomain-com.git
 
 
 ## Initial GCP Service Provisioning
 Provision the initial set of GCP services by running the **1_provision_infrastructure.sh** script in Cloud Shell:
 
-    cd wordpress-on-gcp-free-tier/install/ && bash 1_provision_infrastructure.sh
+    cd wordpress-on-gcp-free-tier-yourdomain-com/install/ && bash 1_provision_infrastructure.sh
 
 This script will enable the required Google APIs, then provision the storage, network, and compute stacks.
 
