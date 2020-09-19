@@ -11,16 +11,20 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./install/pipeline/plugins.sh']
-# Step 3: Build the custom Wordpress image
+# Step 3: Apply Customizations
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  entrypoint: 'bash'
+  args: ['./install/pipeline/customizations.sh']  
+# Step 4: Build the custom Wordpress image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}', '.']
-# Step 4: Push the image to Google Container Registry
+# Step 5: Push the image to Google Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}']
-# Step 5: Deploy the image to Cloud Run
+# Step 6: Deploy the image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--vpc-connector', 'serverless-connect', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX},WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME},WORDPRESS_DB_USER=${_WORDPRESS_DB_USER},WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD},WORDPRESS_DB_HOST=${_MYSQL_VM}.${_ZONE}.c.$PROJECT_ID.internal']
-# Step 6: Direct traffic to the new version
+# Step 7: Direct traffic to the new version
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'services', 'update-traffic', '${_RUN_SERVICE}', '--to-latest', '--region', '${_REGION}', '--platform', 'managed']
 substitutions:
