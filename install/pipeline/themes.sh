@@ -18,6 +18,8 @@ do
     if cd "$dirname-temp"
     then
         unzip ../"$zip"
+        # Remove '__MACOSX' directory
+        rm -rf ./__MACOSX
         mv * ..
         cd ..
         rm -f $zip
