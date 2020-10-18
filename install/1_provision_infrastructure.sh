@@ -57,3 +57,9 @@ gcloud compute disks add-resource-policies ${MYSQL_VM} --resource-policies=${MYS
 # Enable OS Patch Management
 echo "Enabling OS patch management..."
 gcloud compute project-info add-metadata --project ${PROJECT_ID} --metadata=enable-guest-attributes=TRUE,enable-osconfig=TRUE
+
+# Update variables.conf with the external IP address
+echo "Writing the external IP address to variables.conf..."
+export EXTERNAL_IP=$(gcloud compute addresses describe ${MYSQL_VM} --region=$REGION --format="value(address)")
+sed -i $"s/127.0.0.1/$EXTERNAL_IP/g" variables.conf
+echo "Done - commit and push the new variables.conf file back to the repo before continuing"

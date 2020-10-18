@@ -56,16 +56,17 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 
 ## Limitations and Future Considerations
+- The MySQL VM has an external IP, which creates an attack surface. This is a decision in favor of cost over security. The risk has been minimized as much as possible by hardening the MySQL install and creating a firewall rule that only allows ingress on tcp port 3306 to the MySQL VM itself. A bad actor would need to know the external IP of the MySQL VM and the credentials to gain access; the latter can be controlled through a very strong Wordpress username and password for the database. I'm evaluating the possibility of restricting source IP addresses to Google's netblocks for Cloud Run, but that information is difficult to obtain in a deterministic manner.
 - There are no performance or availability guarantees. This runs in a single GCP region with a database that has minimal resources to draw from. Since it's immutable, server-side caching isn't possible. Given those constraints, it's surprisingly performant. The weak link is the database server.
+- This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN, moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql), and providing internal-only connectivity between the Wordpress frontend and the MySQL database through [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 - Multiple SDLC environments aren't supported out of the box. Monorepo principles are followed, with the exclusion of the Wordpress dependencies.
-- This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN and moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 
 
 ## Maintenance
 - The Container Registry image history needs to be maintained, since it's charged as Cloud Storage consumption. This is purely a cost management motion.
-- The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but the Cloud NAT will need to be re-enabled to allow external communication.
+- The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be configured and executed.
 - Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are performed through the CI/CD pipeline instead of the Wordpress Dashboard. This will require occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service - a task that could be automated in the pipeline with [WP-CLI](https://wp-cli.org/).
-  - Updates to the Wordpress core also require a change to the Dockerfile to pull the new upstream image.
+- Updates to the Wordpress core also require a change to the Dockerfile to pull the new upstream image.
 
 
 ## License
