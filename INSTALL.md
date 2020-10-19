@@ -25,7 +25,7 @@ Provision the initial set of GCP services by running the **1_provision_infrastru
 
 This script will enable the required Google APIs, then provision the storage, network, and compute stacks.
 
-It will automatically update the local variables.conf file with the static external IP address that is provisioned for the MySQL VM. Commit this change back into your repo before continuing:
+It will automatically update the local variables.conf file with the static external IP address that is provisioned for the MySQL VM. **Commit this change back into your repo before continuing**:
 
     git commit -a -m "Updated external IP in variables.conf"
     git push origin
