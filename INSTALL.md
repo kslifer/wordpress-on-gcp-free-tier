@@ -15,7 +15,7 @@ Run `gcloud auth login` to ensure that your Cloud Shell session is properly auth
 
 Finally, clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
-    git clone https://oauthtoken@github.com/username/wordpress-on-gcp-free-tier-yourdomain-com.git
+    git clone https://username:oauthtoken@github.com/username/wordpress-on-gcp-free-tier-yourdomain-com.git
 
 
 ## Initial GCP Service Provisioning
@@ -25,11 +25,16 @@ Provision the initial set of GCP services by running the **1_provision_infrastru
 
 This script will enable the required Google APIs, then provision the storage, network, and compute stacks.
 
+It will automatically update the local variables.conf file with the static external IP address that is provisioned for the MySQL VM. **Commit this change back into your repo before continuing**:
+
+    git commit -a -m "Updated external IP in variables.conf"
+    git push origin
+
 
 ## Script Transfer to the MySQL VM
 Copy the **scp 2_configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
-    source variables.conf && gcloud compute scp 2_configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE
+    source variables.conf && gcloud compute scp 2_configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
 
 This command could fail while the newly provisioned resources are propagating across Google Cloud. If it does, try again in a minute.
 
@@ -69,13 +74,6 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 **Note: Write down the WP database name, username and password!**
 
 Run `sudo service mysql restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
-
-Now that all external software has been downloaded to the MySQL VM, we no longer need the Cloud NAT to allow egress - run this command to tear it down:
-
-    source variables.conf && gcloud compute routers nats delete nat --router=router --region=$REGION
-
-Note that this is simply for cost management, because Cloud NAT has a fixed hourly cost. The MySQL VM doesn't require external network access except for when OS patches and software updates are being applied.
-
 
 ## Install the Cloud Build Github App
 In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).

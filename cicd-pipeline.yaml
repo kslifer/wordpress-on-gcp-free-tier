@@ -23,14 +23,18 @@ steps:
   args: ['push', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}']
 # Step 6: Deploy the image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--vpc-connector', 'serverless-connect', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX},WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME},WORDPRESS_DB_USER=${_WORDPRESS_DB_USER},WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD},WORDPRESS_DB_HOST=${_MYSQL_VM}.${_ZONE}.c.$PROJECT_ID.internal']
-# Step 7: Direct traffic to the new version
+  # Internal IP connectivity  
+  #args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--vpc-connector', 'serverless-connect', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX},WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME},WORDPRESS_DB_USER=${_WORDPRESS_DB_USER},WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD},WORDPRESS_DB_HOST=${_MYSQL_VM}.${_ZONE}.c.$PROJECT_ID.internal']
+  # External IP connectivity
+  args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', 'gcr.io/$PROJECT_ID/${_RUN_SERVICE}', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX},WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME},WORDPRESS_DB_USER=${_WORDPRESS_DB_USER},WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD},WORDPRESS_DB_HOST=${_MYSQL_VM_EXT_IP}']
+  # Step 7: Direct traffic to the new version
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'services', 'update-traffic', '${_RUN_SERVICE}', '--to-latest', '--region', '${_REGION}', '--platform', 'managed']
 substitutions:
   _REGION: us-east1 # default
   _ZONE: us-east1-b # default
   _MYSQL_VM: mysql-vm # default
+  _MYSQL_VM_EXT_IP: 127.0.0.1 # default
   _RUN_SERVICE: wordpress-on-run # default
   _WORDPRESS_TABLE_PREFIX: wp_ # default
   _WORDPRESS_DB_NAME: wordpress # default
