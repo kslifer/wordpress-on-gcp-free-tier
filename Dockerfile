@@ -1,5 +1,5 @@
 # Refer to https://hub.docker.com/_/wordpress/ for the latest
-FROM wordpress:5.5.1-php7.4-apache
+FROM wordpress:5.5.3-php7.4-apache
 
 # Remove the Wordpress core
 USER root:root
@@ -32,7 +32,7 @@ RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 
 # Hardcode extra non-sensitive wp-config.php parameters
 # until I figure out how to escape multiple character types within a Cloud Build YAML
-ENV WORDPRESS_CONFIG_EXTRA=define(\'WP_STATELESS_MEDIA_CACHE_BUSTING\',true);define(\'JETPACK_SIGNATURE__HTTPS_PORT\',8080);define(\'WP_MEMORY_LIMIT\',\'512M\');define(\'MYSQL_CLIENT_FLAGS\',MYSQLI_CLIENT_SSL);
+ENV WORDPRESS_CONFIG_EXTRA=define(\'WP_STATELESS_MEDIA_CACHE_BUSTING\',true);define(\'JETPACK_SIGNATURE__HTTPS_PORT\',8080);define(\'WP_MEMORY_LIMIT\',\'512M\');define(\'MYSQL_CLIENT_FLAGS\',MYSQLI_CLIENT_SSL);define(\'WP_AUTO_UPDATE_CORE\',false);
 
 # Expose port 8080 for Cloud Run
 EXPOSE 8080
