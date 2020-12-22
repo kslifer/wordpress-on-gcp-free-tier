@@ -65,13 +65,14 @@ The install process is highly automated and reasonably configurable, leveraging 
 - There are no performance or availability guarantees. This runs in a single GCP region with a database that has minimal resources to draw from. Since it's immutable, server-side caching isn't possible. Given those constraints, it's surprisingly performant. The weak link is the database server.
 - This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN, moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql), and providing internal-only connectivity between the Wordpress frontend and the MySQL database through [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 - Multiple SDLC environments aren't supported out of the box. Monorepo principles are followed, with the exclusion of the Wordpress dependencies.
+- Improved automation of the install process with Terraform is a long-term objective, but not a short-term priority.
+- Improved management of the Wordpress core, themes, and plugins (described below in Maintenance) is in order. Manually downloading zip files and using Github as an interim package manager is categorically toil. WP-CLI requires a functional Wordpress stack, and therefore can't be used offline in a CI/CD pipeline. Having the pipeline download zip files via URLs from a "requirements.txt"-like model is the most promising option.
 
 
 ## Maintenance
-- The Container Registry image history needs to be maintained, since it's charged as Cloud Storage consumption. This is purely a cost management motion.
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be configured and executed.
-- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are performed through the CI/CD pipeline instead of the Wordpress Dashboard. This will require occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service - a task that could probably be automated in the pipeline with [WP-CLI](https://wp-cli.org/).
-- Updates to the Wordpress core also require a change to the Dockerfile to pull the new upstream image.
+- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service.
+- Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to downloading the new zip file).
 
 
 ## License

@@ -30,6 +30,11 @@ RUN sed -i 's/80/8080/g' /etc/apache2/sites-available/000-default.conf /etc/apac
 USER root:root
 RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 
+# Copy the Docker Secrets
+USER root:root
+RUN mkdir /run/secrets
+COPY --chown=root:root run/secrets /run/secrets
+
 # Hardcode extra non-sensitive wp-config.php parameters
 # until I figure out how to escape multiple character types within a Cloud Build YAML
 ENV WORDPRESS_CONFIG_EXTRA=define(\'WP_STATELESS_MEDIA_CACHE_BUSTING\',true);define(\'JETPACK_SIGNATURE__HTTPS_PORT\',8080);define(\'WP_MEMORY_LIMIT\',\'512M\');define(\'MYSQL_CLIENT_FLAGS\',MYSQLI_CLIENT_SSL);define(\'AUTOMATIC_UPDATER_DISABLED\',true);
