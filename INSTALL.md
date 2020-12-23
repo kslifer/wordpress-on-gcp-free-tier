@@ -1,5 +1,5 @@
 # Wordpress on GCP Free Tier - Install Guide
-This install guide outlines the steps to build, configure, and deploy this solution into a Google Cloud Platform (GCP) project. Previous exposure to GCP and Linux are beneficial, but not required.
+This install guide outlines the steps to build, configure, and deploy this solution into a Google Cloud Platform (GCP) project. Previous exposure to GCP and Wordpress are beneficial, but not required.
 
 These instructions will leverage the use of two interfaces into your GCP environment:
 - The [Cloud Console](https://cloud.google.com/cloud-console): a web-based admin interface
@@ -117,7 +117,7 @@ Basic observability can be achieved through the following:
 - Configure an Alerting Notification Channel to your email address
 - Configure an Uptime Check; global HTTPS checks to your root domain URL every 15 minutes are a good baseline
 - Cloud Run metrics can be viewed in the Cloud Console on the Metrics tab of the [Cloud Run service](https://console.cloud.google.com/run) 
-- MySQL VM metrics can be viewed in the Clodu Console on the Monitoring tab of the [Compute Engine instance](https://console.cloud.google.com/compute/instances)
+- MySQL VM metrics can be viewed in the Cloud Console on the Monitoring tab of the [Compute Engine instance](https://console.cloud.google.com/compute/instances)
 
 
 ## Configure Wordpress

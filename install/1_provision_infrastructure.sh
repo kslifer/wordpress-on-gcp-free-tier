@@ -15,7 +15,7 @@ gcloud services enable run.googleapis.com
 #gcloud services enable vpcaccess.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
 gcloud services enable osconfig.googleapis.com
-gcloud services enable containerregistry.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
 gcloud services enable containeranalysis.googleapis.com
 
 # Create GCS Bucket
@@ -29,6 +29,10 @@ else
     echo "Bucket gs://$MEDIA_BUCKET/ exists (not unique); exiting..."
     exit 0
 fi
+
+# Create Artifact Registry Docker Repository
+echo "Creating Artifact Registry Docker repository..."
+gcloud artifacts repositories create $ARTIFACT_REPO --repository-format=docker --location=$REGION --description="Docker Repository"
 
 # Create network stack
 echo "Creating network resources..."
