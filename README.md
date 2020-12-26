@@ -70,7 +70,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 
 ## Maintenance
-- The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be configured and executed.
+- The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be manually configured and executed. Updates to MySQL also need to be manually applied.
 - Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service.
 - Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to downloading the new zip file).
 
