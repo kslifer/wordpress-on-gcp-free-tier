@@ -68,6 +68,8 @@ The install process is highly automated and reasonably configurable, leveraging 
 - Improved automation of the install process with Terraform is a long-term objective, but not a short-term priority.
 - Test automation in the CI/CD pipeline and post-deployment verification (with alerting on failure) would further streamline deployments.
 - Improved management of the Wordpress core, themes, and plugins (described below in Maintenance) is in order. Manually downloading zip files and using Github as an interim package manager is categorically toil. WP-CLI requires a functional Wordpress stack, and therefore can't be used offline in a CI/CD pipeline. Having the pipeline download zip files via URLs from a "requirements.txt"-like model is the most promising option.
+- Creation of a dashboard in the Cloud Operations Suite to measure and alert on usage of the free tier resources is an interesting idea that is yet to be explored.
+- Targeted optimization of MySQL will likely be necessary to best support a more complex site with increasing traffic.
 
 
 ## Maintenance
