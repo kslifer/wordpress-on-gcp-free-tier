@@ -1,5 +1,5 @@
 # Refer to https://hub.docker.com/_/wordpress/ for the latest
-FROM wordpress:5.6-php7.4-apache
+FROM wordpress:5.6.1-php7.4-apache
 
 # Remove the Wordpress core
 USER root:root
