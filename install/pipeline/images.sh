@@ -7,11 +7,14 @@ set -eEuo pipefail
 echo "Loading variables..."
 source ./install/variables.conf
 
+# KMS NOTE: "--sort-by" command seems to be broke; modified commands are below this block
 # test - list all images and count
-echo "Listing image history"
-gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME
+#echo "Listing image history"
+#gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME
+#echo "Counting image history"
+#gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
 echo "Counting image history"
-gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
+gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags  | grep -v DIGEST | wc -l
 
 # demote 'oldest' to ''
 for DIGEST in $(gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --filter="tags='oldest'" --format='get(DIGEST)'); do
@@ -53,8 +56,11 @@ for DIGEST in $(gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJ
   gcloud artifacts docker images delete -q "$REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE@${DIGEST}"
 done
 
+# KMS NOTE: "--sort-by" command seems to be broke; modified commands are below this block
 # test - list all images and count
-echo "Listing image history"
-gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME
+#echo "Listing image history"
+#gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME
+#echo "Counting image history"
+#gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
 echo "Counting image history"
-gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
+gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$RUN_SERVICE --include-tags  | grep -v DIGEST | wc -l
