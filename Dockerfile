@@ -1,9 +1,5 @@
 # Refer to https://hub.docker.com/_/wordpress/ for the latest
-FROM wordpress:5.6.2-php7.4-apache
-
-# Remove the Wordpress core
-USER root:root
-RUN rm -rf /usr/src/wordpress
+FROM wordpress:5.7.0-php7.4-apache
 
 # Inject the default production php configurations
 USER root:root
