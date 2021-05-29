@@ -1,5 +1,5 @@
 # Refer to https://hub.docker.com/_/wordpress/ for the latest
-FROM wordpress:5.7.1-php7.4-apache
+FROM wordpress:5.7.2-php7.4-apache
 
 # Inject the default production php configurations
 USER root:root
