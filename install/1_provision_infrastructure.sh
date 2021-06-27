@@ -23,8 +23,8 @@ echo "Creating GCS bucket for media..."
 if ! [ $(gsutil ls -b gs://$MEDIA_BUCKET/) ]
 then
     echo "Bucket gs://$MEDIA_BUCKET/ doesn't exist. Creating..."
-    gsutil mb -b off -c standard -l $REGION gs://$MEDIA_BUCKET
-    gsutil acl ch -u AllUsers:R gs://$MEDIA_BUCKET
+    gsutil mb -b on -c standard -l $REGION gs://$MEDIA_BUCKET
+    gsutil iam ch allUsers:objectViewer gs://$MEDIA_BUCKET
 else
     echo "Bucket gs://$MEDIA_BUCKET/ exists (not unique); exiting..."
     exit 0
