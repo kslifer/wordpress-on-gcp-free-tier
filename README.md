@@ -22,7 +22,7 @@ Compute, data, and media are separated and distributed, with the Wordpress front
 
 The free tier monthly usage budgets of these services that this solution aims to stay within are:
 - **Cloud Run**: 2m Requests / 360k GB Seconds / 180k vCPU Seconds / 1 GB Network Egress
-- **Compute Engine**: 1 f1-micro Instance / 30 GB HDD Disk / 1 GB Network Egress / 5 GB Snapshot Storage
+- **Compute Engine**: 1 e2-micro Instance / 30 GB HDD Disk / 1 GB Network Egress / 5 GB Snapshot Storage
 - **Cloud Storage**: 5 GB Standard Storage / 5k Class A Ops / 50k Class B Ops / 1 GB Network Egress
 
 
@@ -35,7 +35,7 @@ The cold start has been optimized by baking the part of the [Docker Entrypoint](
 
 
 ### MySQL Database
-The approach to the MySQL database follows a traditional hosting model, with it sitting on a long-running f1-micro instance. The f1-micro is Google Cloud's smallest VM instance class that is offered in the free tier, with 0.6 GB memory and 0.2 vCPU that can occasionally burst to a full core.
+The approach to the MySQL database follows a traditional hosting model, with it sitting on a long-running e2-micro instance. The e2-micro is Google Cloud's smallest VM instance class that is offered in the free tier, with 1 GB memory and 0.25 vCPU that can occasionally burst to 2 full cores.
 
 MySQL isn't prescriptive on resource requirements, because it will depend on the database size and transactional volume that need to be supported. Performance has been optimized by provisioning the largest persistent disk possible within the free tier (30 GB HDD) to maximize the IOPS budget, then allocating a 1 GB swap file to relieve memory pressure. The fractional CPU is still a bottleneck, but the whole platform stood up to quite a bit of [Apache Bench](https://httpd.apache.org/docs/2.4/programs/ab.html) load testing. For a site that will receive a modest amount of traffic, it's sufficient.
 

@@ -53,9 +53,9 @@ gcloud compute addresses create ${MYSQL_VM} --network-tier=PREMIUM --region=$REG
 echo "Creating compute resources..."
 gcloud compute resource-policies create snapshot-schedule ${MYSQL_VM}-backup --max-retention-days=3 --start-time=04:00 --daily-schedule --region=$REGION --storage-location=$REGION
 # Without external IP
-#gcloud compute instances create ${MYSQL_VM} --zone=$ZONE --machine-type=f1-micro --image-project=debian-cloud --image-family=debian-10 --boot-disk-type=pd-standard --boot-disk-size=30GB --no-boot-disk-auto-delete --network=network --subnet=subnet --no-address
+#gcloud compute instances create ${MYSQL_VM} --zone=$ZONE --machine-type=e2-micro --image-project=debian-cloud --image-family=debian-10 --boot-disk-type=pd-standard --boot-disk-size=30GB --no-boot-disk-auto-delete --network=network --subnet=subnet --no-address
 # With external IP
-gcloud compute instances create ${MYSQL_VM} --zone=$ZONE --machine-type=f1-micro --image-project=debian-cloud --image-family=debian-10 --boot-disk-type=pd-standard --boot-disk-size=30GB --no-boot-disk-auto-delete --network=network --subnet=subnet --tags=mysql --address=${MYSQL_VM}
+gcloud compute instances create ${MYSQL_VM} --zone=$ZONE --machine-type=e2-micro --image-project=debian-cloud --image-family=debian-10 --boot-disk-type=pd-standard --boot-disk-size=30GB --no-boot-disk-auto-delete --network=network --subnet=subnet --tags=mysql --address=${MYSQL_VM}
 gcloud compute disks add-resource-policies ${MYSQL_VM} --resource-policies=${MYSQL_VM}-backup --zone=$ZONE
 
 # Enable OS Patch Management
