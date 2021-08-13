@@ -63,15 +63,15 @@ echo "Enabling OS patch management..."
 gcloud compute project-info add-metadata --project ${PROJECT_ID} --metadata=enable-guest-attributes=TRUE,enable-osconfig=TRUE
 
 # Configure a monthly reboot instance schedule
-gcloud compute resource-policies create instance-schedule mysql-monthly-reboot --description='Stop and start the MySQL server overnight' --region=$REGION --vm-start-schedule='15 1 1 * *' --vm-stop-schedule='0 1 1 * *' --timezone=America/New_York
+#gcloud compute resource-policies create instance-schedule mysql-monthly-reboot --description='Stop and start the MySQL server overnight' --region=$REGION --vm-start-schedule='15 1 1 * *' --vm-stop-schedule='0 1 1 * *' --timezone=America/New_York
 
 # Update Compute SA permissions to execute instance schedule
-export PROJECT_NUM=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)")
-echo $PROJECT_NUM
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:service-${PROJECT_NUM}@compute-system.iam.gserviceaccount.com" --role='roles/compute.instanceAdmin.v1'
+#export PROJECT_NUM=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)")
+#echo $PROJECT_NUM
+#gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:service-${PROJECT_NUM}@compute-system.iam.gserviceaccount.com" --role='roles/compute.instanceAdmin.v1'
 
 # Attach the instance schedule to the MySQL VM
-gcloud compute instances add-resource-policies ${MYSQL_VM} --resource-policies=mysql-monthly-reboot --zone=$ZONE
+#gcloud compute instances add-resource-policies ${MYSQL_VM} --resource-policies=mysql-monthly-reboot --zone=$ZONE
 
 # Update variables.conf with the external IP address
 echo "Writing the external IP address to variables.conf..."
