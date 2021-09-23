@@ -3,6 +3,13 @@
 # failsafe
 set -eEuo pipefail
 
+# copy and run the download script
+cp ./install/pipeline/download.sh ./wordpress-plugins
+cd wordpress-plugins
+chmod +x download.sh
+./download.sh
+cd ..
+
 # remove default plugins
 rm -r ./wordpress-core/wordpress/wp-content/plugins/*
 

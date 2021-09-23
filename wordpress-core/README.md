@@ -1,5 +1,9 @@
 # Wordpress Core
-Download [the Wordpress distribution zip](https://wordpress.org/download/) from Wordpress, then place it in this directory and in your repo.
+Provide a URL to [the Wordpress distribution zip](https://wordpress.org/download/releases/) in the [download.txt](download.txt) file, and it will be fetched during the build process.
+
+OR
+
+Download it directly from Wordpress, then place it in this directory and in your repo.
 
 The build script will unpack and inject the distribution into the final Wordpress image.
 
