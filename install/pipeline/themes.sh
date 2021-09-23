@@ -3,6 +3,13 @@
 # failsafe
 set -eEuo pipefail
 
+# copy and run the download script
+cp ./install/pipeline/download.sh ./wordpress-themes
+cd wordpress-themes
+chmod +x download.sh
+./download.sh
+cd ..
+
 # remove default themes
 rm -r ./wordpress-core/wordpress/wp-content/themes/*
 

@@ -125,7 +125,7 @@ At this point, it's safe to nevigate to [www.yourdomain.com](https://www.yourdom
 
 **NOTE: Write down the WP admin username and password!**
 
-Themes and Plugins that were placed into the GitHub repo and built into the image will be available in the Dashboard. Activate and customize them - changes will be persisted into the MySQL database.
+Themes and Plugins that were built into the image will be available in the Dashboard. Activate and customize them - changes will be persisted into the MySQL database.
 
 The WP-Stateless plugin should be activated first and configured to your GCP project and the GCS media bucket configured in variables.conf through the automated setup process. Don't setup a new GCP project and bucket! This plugin will redirect all media uploads to a GCS bucket in GCP, ensuring that the media is persisted across container instances and the Wordpress frontend remains stateless.
 

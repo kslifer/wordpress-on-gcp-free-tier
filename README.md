@@ -51,8 +51,8 @@ Head on over to the [Install Guide](INSTALL.md) for step by step instructions.
 
 But please **do this first**:
 - [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's variables.conf file)
-- Download the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site into the wordpress-themes folder
-- Download the [plugins](https://wordpress.org/plugins/) that you intend to use on the site into the wordpress-plugins folder
+- Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
+- Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
 - Update the [variables.conf](install/variables.conf) file with your planned configuration
 - Commit the changes back into your private repo
@@ -61,21 +61,20 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 
 ## Limitations and Future Considerations
-- Database connectivity between Cloud Run and the MySQL VM is hairpinned to an external IP. This is an architecture decision that favors cost over security. It introduces both a performance consideration and an attack surface. The performance impact is negligable. The attack surface risk has been mitigated as much as possible by hardening the MySQL install and creating a firewall rule that only allows ingress on tcp port 3306 to the MySQL VM. A bad actor would need to know the external IP of the MySQL VM and database credentials to gain access. Storing site-specific configuration in a private repo and using a very strong Wordpress username and password for the database will minimize the risk of this happening. That said, an attack surface still exists, and I'm evaluating the possibility of restricting the firewall rule source IP addresses to Google's netblocks for Cloud Run, but that information is difficult to obtain in a deterministic manner.
+- Database connectivity between Cloud Run and the MySQL VM is hairpinned through the Google Frontend to an external IP. This is an architecture decision that favors cost over security. It introduces both a performance consideration and an attack surface. The performance impact is negligable. The attack surface risk has been mitigated as much as possible by hardening the MySQL install and creating a firewall rule that only allows ingress on tcp port 3306 to the MySQL VM. A bad actor would need to know the external IP of the MySQL VM and database credentials to gain access. Storing site-specific configuration in a private repo and using a very strong Wordpress username and password for the database will minimize the risk of this happening. That said, an attack surface still exists, and I'm evaluating the possibility of restricting the firewall rule source IP addresses to Google's netblocks for Cloud Run, but that information is difficult to obtain in a deterministic manner.
 - There are no performance or availability guarantees. This runs in a single GCP region with a database that has minimal resources to draw from. Since it's immutable, server-side caching isn't possible. Given those constraints, it's surprisingly performant. The weak link is the database server.
 - This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN, moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql), and providing internal-only connectivity between the Wordpress frontend and the MySQL database through [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 - Multiple SDLC environments aren't supported out of the box. Trunk-based development principles are followed.
 - Improved automation of the install process with Terraform is a long-term objective, but not a short-term priority.
 - Test automation in the CI/CD pipeline and post-deployment verification (with alerting on failure) would further streamline deployments.
-- Improved management of the Wordpress core, themes, and plugins (described below in Maintenance) is in order. Manually downloading zip files and using Github as an interim package manager is categorically toil. WP-CLI requires a functional Wordpress stack, and therefore can't be used offline in a CI/CD pipeline. Having the pipeline download zip files via URLs from a "requirements.txt"-like model is the most promising option.
 - Creation of a dashboard in the Cloud Operations Suite to measure and alert on usage of the free tier resources is an interesting idea that is yet to be explored.
 - Targeted optimization of MySQL will likely be necessary to best support a more complex site with increasing traffic.
 
 
 ## Maintenance
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be manually configured and executed. Updates to MySQL also need to be manually applied.
-- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally downloading the respective zip files, swapping them in for the old versions in the repo, then triggering the pipeline to deploy an updated container to the Cloud Run service.
-- Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to downloading the new zip file).
+- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the pipeline to deploy an updated container to the Cloud Run service.
+- Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to configuring the new zip file URL).
 
 
 ## License
