@@ -140,7 +140,7 @@ resource "google_compute_instance" "mysql-vm" {
   }
 
   service_account {
-    scopes = ["default"]
+    scopes = ["cloud-platform"]
   }
 
   allow_stopping_for_update = "true"
