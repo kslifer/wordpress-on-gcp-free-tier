@@ -14,12 +14,12 @@ mysql_vm    = "mysql-huevos-com" #"mysql-yourdomain-com"
 run_service = "wp-huevos-com"    #"wp-yourdomain-com"
 
 # GitHub Username and Repo
-# These values MUST be replaced
+# These values MUST be configured
 gh_username = "kslifer"                    #"username"
 gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
 
 # Wordpress Configuration
-# The table prefix can be left as-is, but DB values MUST be replaced
+# The table prefix can be left as-is, but DB values MUST be configured
 wordpress_table_prefix = "wp_"
 wordpress_db_name = "wordpress"
 wordpress_db_user = "wordpress"

@@ -36,21 +36,37 @@ variable "run_service" {
   type        = string
 }
 
-# External IP of MySQL VM
-# This value will be updated during the provisioning process
-
-# TO DO: WHERE IS THIS NEEDED?
-
 # GitHub Username and Repo
-# These values MUST be replaced
-
-# TO DO: WHERE IS THIS NEEDED?
+# These values MUST be configured
+variable "gh_username" {
+  description = "GitHub User Name"
+  type        = string
+}
+variable "gh_repo" {
+  description = "GitHub Repo Name"
+  type        = string
+}
 
 # Wordpress Configuration
-# The table prefix can be left as-is, but DB values MUST be replaced
+# The table prefix can be left as-is, but DB values MUST be configured
+variable "wordpress_table_prefix" {
+  description = "WordPress DB Table Prefix"
+  type        = string
+}
+variable "wordpress_db_name" {
+  description = "WordPress DB Table Name"
+  type        = string
+}
+variable "wordpress_db_user" {
+  description = "WordPress DB User Name"
+  type        = string
+}
+variable "wordpress_db_password" {
+  description = "WordPress DB Password"
+  type        = string
+}
 
-# TO DO: WHERE IS THIS NEEDED?
-
+# GCP service APIs to enable
 variable "gcp_service_apis" {
   description = "The GCP Service APIs to be enabled within the project"
   type        = list(string)
