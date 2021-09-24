@@ -39,7 +39,7 @@ In the Cloud Console, follow steps [in this article](https://cloud.google.com/cl
 ## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
 Run the following command in the Cloud Shell to configure a trigger for the Terraform pipeline:
 
-    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*.tf" --ignored-files="**/*.md, apache/**, diagrams/**, install/**, Dockerfile, app-pipeline.yaml" --build-config="infra-pipeline.yaml"
+    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*" --ignored-files="**/*.md, apache/**, diagrams/**, install/**, Dockerfile, app-pipeline.yaml" --build-config="infra-pipeline.yaml"
 
 
 
