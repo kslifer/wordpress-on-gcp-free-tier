@@ -43,7 +43,7 @@ Run the following command in the Cloud Shell to configure a trigger for the Terr
     gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*" --ignored-files="**/*.md, apache/**, diagrams/**, install/**, Dockerfile, app-pipeline.yaml" --build-config="infra-pipeline.yaml"
 
 
-
+### TODO - CONFIGURE TRIGGER FOR APP PIPELINE
 
 
 
