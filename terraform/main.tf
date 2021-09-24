@@ -90,6 +90,27 @@ resource "google_compute_address" "mysql-external-ip" {
   network_tier = "PREMIUM"
 }
 
+# Create compute stack
+resource "google_compute_resource_policy" "snapshot-schedule" {
+  name   = "snapshot-schedule"
+  region = var.region
+  snapshot_schedule_policy {
+    schedule {
+      daily_schedule {
+        days_in_cycle = 1
+        start_time    = "04:00"
+      }
+    }
+    retention_policy {
+      max_retention_days    = 3
+      on_source_disk_delete = "KEEP_AUTO_SNAPSHOTS"
+    }
+    snapshot_properties {
+      storage_locations = [var.region]
+      guest_flush       = "true"
+    }
+  }
+}
 
 
 
