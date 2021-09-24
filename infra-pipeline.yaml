@@ -23,7 +23,6 @@ steps:
   - '-c'
   - |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
-    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/terraform.tfvars
 # Step 2: Execute terraform init
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
