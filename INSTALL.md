@@ -21,9 +21,8 @@ Finally, clone your private repo into your working Cloud Shell directory. This w
 
 
 
-
 ### Enable the Cloud Build API for pipeline execution
- Run the following command in the Cloud Shell:
+ Run the following command in the Cloud Shell to enable the Cloud Build API:
 
     gcloud services enable cloudbuild.googleapis.com
 
@@ -32,6 +31,16 @@ Finally, clone your private repo into your working Cloud Shell directory. This w
  
     export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${PROJECT_NUM}@cloudbuild.gserviceaccount.com" --role='roles/owner'
+
+## Install the Cloud Build Github App
+In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).
+
+## Configure the Infra Pipeline
+## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
+Run the following command in the Cloud Shell to configure a trigger for the Terraform pipeline:
+
+    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*.tf" --ignored-files="**/*.md, apache/**, diagrams/**, install/**, Dockerfile, app-pipeline.yaml" --build-config="infra-pipeline.yaml"
+
 
 
 
