@@ -1,6 +1,7 @@
 project_id = "KEY_PROJECT_ID"
 
 gcp_service_list = [
+    "cloudresourcemanager.googleapis.com",
     "cloudbuild.googleapis.com",
     "compute.googleapis.com",
     "run.googleapis.com",
