@@ -43,4 +43,4 @@ steps:
   args:
   - '-c'
   - |
-    cd terraform && terraform apply tfplan
+    cd terraform && terraform apply tfplan && terraform output -raw project_id

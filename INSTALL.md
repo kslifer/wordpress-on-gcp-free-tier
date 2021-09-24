@@ -38,12 +38,16 @@ In the Cloud Console, follow steps [in this article](https://cloud.google.com/cl
 
 ## Configure the Infra Pipeline
 ## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
-Run the following command in the Cloud Shell to configure a trigger for the Terraform pipeline:
+Run the following command in the Cloud Shell to configure a trigger for the Terraform CI/CD pipeline:
 
-    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*" --ignored-files="**/*.md, apache/**, diagrams/**, install/**, Dockerfile, app-pipeline.yaml" --build-config="infra-pipeline.yaml"
+    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
 
+## Configure the App Pipeline
+## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
+Run the following command in the Cloud Shell to configure a trigger for the Cloud Run CI/CD pipeline:
 
-### TODO - CONFIGURE TRIGGER FOR APP PIPELINE
+    gcloud beta builds triggers create github --name="github-trigger-app" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="Dockerfile, wordpress-*/*, app-pipeline.yaml" --build-config="app-pipeline.yaml" --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
+
 
 
 
