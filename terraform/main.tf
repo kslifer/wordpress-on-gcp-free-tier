@@ -149,7 +149,7 @@ resource "google_compute_instance" "mysql-vm" {
 
 resource "google_compute_disk_resource_policy_attachment" "mysql-backup" {
   name = google_compute_resource_policy.snapshot-schedule.name
-  disk = google_compute_disk.boot_disk.name
+  disk = google_compute_instance.mysql-vm.boot_disk.name
   zone = var.zone
 }
 
