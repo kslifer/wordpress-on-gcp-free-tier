@@ -144,6 +144,7 @@ resource "google_compute_instance" "mysql-vm" {
   }
 
   allow_stopping_for_update = "true"
+  desired_status = "RUNNING"
 }
 
 
