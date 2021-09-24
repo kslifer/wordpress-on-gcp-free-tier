@@ -44,4 +44,4 @@ steps:
   args:
   - '-c'
   - |
-    cd terraform && terraform apply tfplan -auto-approve
+    cd terraform && terraform apply tfplan
