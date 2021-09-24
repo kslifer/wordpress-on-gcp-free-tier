@@ -21,10 +21,11 @@ Finally, clone your private repo into your working Cloud Shell directory. This w
 
 
 
-### Enable the Cloud Build API for pipeline execution
- Run the following command in the Cloud Shell to enable the Cloud Build API:
+### Enable the Cloud Build API and Cloud Resource Manager API for pipeline execution
+ Run the following commands in the Cloud Shell:
 
     gcloud services enable cloudbuild.googleapis.com
+    gcloud services enable cloudresourcemanager.googleapis.com
 
 ### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
   Run the following commands in the Cloud Shell to update the IAM permissions:
