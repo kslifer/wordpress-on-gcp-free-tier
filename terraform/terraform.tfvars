@@ -8,7 +8,6 @@ gcp_service_apis = [
     "osconfig.googleapis.com",
     "artifactregistry.googleapis.com",
     "containeranalysis.googleapis.com",
-    "vpcaccess.googleapis.com",
 
 ]
 
