@@ -160,3 +160,26 @@ resource "google_compute_project_metadata" "vm-manager" {
     enable-osconfig         = "TRUE"
   }
 }
+
+# Configure App CI/CD Pipeline Trigger
+resource "google_cloudbuild_trigger" "app-cicd-trigger" {
+  name = "github-trigger-app-tf"
+
+  github {
+    owner = var.gh_username
+    name  = var.gh_repo
+    push {
+      branch = "^#4-dev-terraform$" #"^master$"
+    }
+  }
+
+  substitutions = {
+    _ARTIFACT_REPO = var.artifact_repo
+    _REGION        = var.region
+    _RUN_SERVICE   = var.run_service
+  }
+
+  included_files = ["Dockerfile", "wordpress-*/*", "app-pipeline.yaml"]
+
+  filename = "app-pipeline.yaml"
+}
