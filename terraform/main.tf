@@ -49,3 +49,15 @@ resource "google_compute_subnetwork" "vpc-subnet" {
   network       = google_compute_network.vpc-network.id
   private_ip_google_access = "true"
 }
+
+
+
+
+
+# Enable OS Patch Management
+resource "google_compute_project_metadata" "vm-manager" {
+  metadata = {
+    enable-guest-attributes  = "TRUE"
+    enable-osconfig = "TRUE"
+  }
+}
