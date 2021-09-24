@@ -3,6 +3,13 @@
 # failsafe
 set -eEuo pipefail
 
+# copy and run the download script
+cp ./install/pipeline/download.sh ./wordpress-core
+cd wordpress-core
+chmod +x download.sh
+./download.sh
+cd ..
+
 # unpack wordpress
 apt-get update
 apt-get install -y unzip
