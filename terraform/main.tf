@@ -123,16 +123,15 @@ resource "google_compute_instance" "mysql-vm" {
     auto_delete = "false"
     initialize_params {
       image = "debian-cloud/debian-10"
-      size = "30"
-      type = "pd-standard"
+      size  = "30"
+      type  = "pd-standard"
     }
   }
 
   network_interface {
-    subnetwork   = google_compute_subnetwork.vpc-subnet.name
-
+    subnetwork = google_compute_subnetwork.vpc-subnet.name
     access_config {
-      nat_ip = google_compute_address.mysql-external-ip.name
+      nat_ip = google_compute_address.mysql-external-ip.address
     }
   }
 
