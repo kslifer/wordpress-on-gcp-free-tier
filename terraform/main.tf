@@ -147,6 +147,11 @@ resource "google_compute_instance" "mysql-vm" {
   desired_status = "RUNNING"
 }
 
+resource "google_compute_disk_resource_policy_attachment" "mysql-backup" {
+  name = google_compute_resource_policy.snapshot-schedule.name
+  disk = google_compute_disk.boot_disk.name
+  zone = var.zone
+}
 
 # Enable OS Patch Management
 resource "google_compute_project_metadata" "vm-manager" {
