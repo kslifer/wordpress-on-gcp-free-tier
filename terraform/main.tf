@@ -139,6 +139,11 @@ resource "google_compute_instance" "mysql-vm" {
     enable_secure_boot = "true"
   }
 
+  service_account {
+    email  = google_service_account.default.email
+    scopes = ["default"]
+  }
+
   allow_stopping_for_update = "true"
 }
 
