@@ -13,10 +13,19 @@ zone   = "us-east1-b"
 mysql_vm    = "mysql-huevos-com" #"mysql-yourdomain-com"
 run_service = "wp-huevos-com"    #"wp-yourdomain-com"
 
+# GitHub Username and Repo
+# These values MUST be replaced
+gh_username = "kslifer"                    #"username"
+gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
 
+# Wordpress Configuration
+# The table prefix can be left as-is, but DB values MUST be replaced
+wordpress_table_prefix = "wp_"
+wordpress_db_name = "wordpress"
+wordpress_db_user = "wordpress"
+wordpress_db_password = "WordPass1234!"
 
-
-
+# GCP service APIs to enable
 gcp_service_apis = [
   "cloudresourcemanager.googleapis.com",
   "cloudbuild.googleapis.com",
