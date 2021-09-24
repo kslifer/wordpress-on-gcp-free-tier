@@ -140,7 +140,6 @@ resource "google_compute_instance" "mysql-vm" {
   }
 
   service_account {
-    email  = google_service_account.default.email
     scopes = ["default"]
   }
 
