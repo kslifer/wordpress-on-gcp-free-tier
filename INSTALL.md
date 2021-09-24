@@ -18,6 +18,25 @@ Finally, clone your private repo into your working Cloud Shell directory. This w
     git clone https://username:oauthtoken@github.com/username/wordpress-on-gcp-free-tier-yourdomain-com.git
 
 
+
+
+
+
+### Enable the Cloud Build API for pipeline execution
+ Run the following command in the Cloud Shell:
+
+    gcloud services enable cloudbuild.googleapis.com
+
+### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
+  Run the following commands in the Cloud Shell to update the IAM permissions:
+ 
+    export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
+    gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${PROJECT_NUM}@cloudbuild.gserviceaccount.com" --role='roles/owner'
+
+
+
+
+
 ## Initial GCP Service Provisioning
 Provision the initial set of GCP services by running the **1_provision_infrastructure.sh** script in Cloud Shell:
 
