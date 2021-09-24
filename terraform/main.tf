@@ -86,7 +86,6 @@ resource "google_compute_firewall" "ingress-mysql-all" {
 
 resource "google_compute_address" "mysql-external-ip" {
   name         = var.mysql_vm
-  subnetwork   = google_compute_subnetwork.vpc-subnet.id
   address_type = "EXTERNAL"
   network_tier = "PREMIUM"
 }
