@@ -112,6 +112,36 @@ resource "google_compute_resource_policy" "snapshot-schedule" {
   }
 }
 
+resource "google_compute_instance" "mysql-vm" {
+  name         = var.mysql_vm
+  machine_type = "e2-micro"
+  zone         = var.zone
+
+  tags = ["mysql"]
+
+  boot_disk {
+    auto_delete = "false"
+    initialize_params {
+      image = "debian-cloud/debian-10"
+      size = "30"
+      type = "pd-standard"
+    }
+  }
+
+  network_interface {
+    subnetwork   = google_compute_subnetwork.vpc-subnet.name
+
+    access_config {
+      nat_ip = google_compute_resource_policy.mysql-external-ip.name
+    }
+  }
+
+  shielded_instance_config {
+    enable_secure_boot = "true"
+  }
+
+  allow_stopping_for_update = "true"
+}
 
 
 # Enable OS Patch Management
