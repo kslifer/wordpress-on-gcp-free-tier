@@ -1,8 +1,9 @@
 # Enable Google Cloud Service APIs
 resource "google_project_service" "gcp_services" {
-  count   = length(var.gcp_service_list)
+  for_each = var.gcp_service_apis
+
   project = var.project_id
-  service = var.gcp_service_list[count.index]
+  service = each.value
 
   disable_dependent_services = true
 }
