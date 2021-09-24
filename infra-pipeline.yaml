@@ -39,9 +39,9 @@ steps:
   - |
     cd terraform && terraform plan -out=tfplan
 # Step 4: Execute terraform apply
-#- name: 'hashicorp/terraform:1.0.6'
-#  entrypoint: 'sh'
-#  args:
-#  - '-c'
-#  - |
-#    cd terraform && terraform apply tfplan -auto-approve
+- name: 'hashicorp/terraform:1.0.6'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd terraform && terraform apply tfplan -auto-approve
