@@ -5,6 +5,9 @@ terraform {
     google = {
       source  = "hashicorp/google"
       version = "~> 3.5"
+
+      project = var.project_id
+      region = var.region
     }
   }
 }
