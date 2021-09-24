@@ -144,7 +144,7 @@ resource "google_compute_instance" "mysql-vm" {
   }
 
   allow_stopping_for_update = "true"
-  desired_status = "RUNNING"
+  desired_status            = "RUNNING"
 }
 
 resource "google_compute_disk_resource_policy_attachment" "mysql-backup" {
