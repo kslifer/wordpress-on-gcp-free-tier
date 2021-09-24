@@ -1,15 +1,15 @@
 variable "project_id" {
   description = "GCP Project ID"
-  type        = "string"
+  type        = string
 }
 
 variable "gcp_service_apis" {
   description = "The GCP Service APIs to be enabled within the project"
-  type        = "list"
+  type        = list(string)
 }
 
 variable "region" {
   description = "GCP Region"
-  type        = "string"
+  type        = string
   default     = "us-east1"
 }
