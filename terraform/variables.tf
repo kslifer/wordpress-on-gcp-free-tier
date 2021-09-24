@@ -46,6 +46,11 @@ variable "gh_repo" {
   description = "GitHub Repo Name"
   type        = string
 }
+variable "gh_branch" {
+  description = "GitHub Repo Branch"
+  type        = string
+  default     = "^master$"
+}
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured

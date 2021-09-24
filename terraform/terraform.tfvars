@@ -17,6 +17,7 @@ run_service = "wp-huevos-com"    #"wp-yourdomain-com"
 # These values MUST be configured
 gh_username = "kslifer"                    #"username"
 gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
+gh_branch   = "^#4-dev-terraform$"         #"^master$"
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured

@@ -163,13 +163,13 @@ resource "google_compute_project_metadata" "vm-manager" {
 
 # Configure App CI/CD Pipeline Trigger
 resource "google_cloudbuild_trigger" "app-cicd-trigger" {
-  name = "github-trigger-app-tf"
+  name = "github-trigger-app"
 
   github {
     owner = var.gh_username
     name  = var.gh_repo
     push {
-      branch = "^#4-dev-terraform$" #"^master$"
+      branch = var.gh_branch
     }
   }
 

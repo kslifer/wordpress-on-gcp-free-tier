@@ -38,6 +38,10 @@ output "gh_repo" {
   value = var.gh_repo
 }
 
+output "gh_branch" {
+  value = var.gh_branch
+}
+
 output "wordpress_table_prefix" {
   value = var.wordpress_table_prefix
 }
