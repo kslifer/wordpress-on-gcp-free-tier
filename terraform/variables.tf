@@ -3,7 +3,7 @@ variable "project_id" {
   type        = string
 }
 
-variable "gcp_service_list" {
+variable "gcp_service_apis" {
   description = "List of GCP service APIs to be enabled within the project"
   type        = list
 }
