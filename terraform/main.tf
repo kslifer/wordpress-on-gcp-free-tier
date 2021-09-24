@@ -132,7 +132,7 @@ resource "google_compute_instance" "mysql-vm" {
     subnetwork   = google_compute_subnetwork.vpc-subnet.name
 
     access_config {
-      nat_ip = google_compute_resource_policy.mysql-external-ip.name
+      nat_ip = google_compute_address.mysql-external-ip.name
     }
   }
 
