@@ -21,9 +21,9 @@ gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdoma
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured
 wordpress_table_prefix = "wp_"
-wordpress_db_name = "wordpress"
-wordpress_db_user = "wordpress"
-wordpress_db_password = "WordPass1234!"
+wordpress_db_name      = "wordpress"
+wordpress_db_user      = "wordpress"
+wordpress_db_password  = "WordPass1234!"
 
 # GCP service APIs to enable
 gcp_service_apis = [
