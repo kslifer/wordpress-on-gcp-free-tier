@@ -36,11 +36,11 @@ steps:
   args:
   - '-c'
   - |
-    export $WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX}
-    export $WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME}
-    export $WORDPRESS_DB_USER=${_WORDPRESS_DB_USER}
-    export $WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD}
-    export $MYSQL_VM_EXT_IP=${_MYSQL_VM_EXT_IP}
+    export $$WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX}
+    export $$WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME}
+    export $$WORDPRESS_DB_USER=${_WORDPRESS_DB_USER}
+    export $$WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD}
+    export $$MYSQL_VM_EXT_IP=${_MYSQL_VM_EXT_IP}
     ./app-pipeline/secrets.sh
   # args: ['./app-pipeline/secrets.sh']
 # Step 5: Build the custom Wordpress image for Artifact Registry
