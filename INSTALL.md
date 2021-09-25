@@ -99,7 +99,7 @@ Once this process completes, run `mysqladmin -u root -p version` to further veri
 
 To perform the Wordpress-specific configuration of the MySQL database, follow [the official Wordpress support directions](https://wordpress.org/support/article/creating-database-for-wordpress/#using-the-mysql-client):
 - Run `mysql -u root -p` to log in
-- Run `CREATE DATABASE wordpress;` to create the WP database (use whatever value matches your variables.conf)
+- Run `CREATE DATABASE wordpress;` to create the WP database (use whatever value matches your terraform.tfvars)
 - Run `CREATE USER "wordpress"@"%" IDENTIFIED BY "WordPass1234!";` to create the WP username and password (use whatever values match your variable.conf)
 - Run `GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"%";` to assign the permissions (using your WP database name for the first value, and your WP username for the second value)
 - Run `FLUSH PRIVILEGES;`

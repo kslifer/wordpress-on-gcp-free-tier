@@ -25,4 +25,4 @@ cd /tmp
 wget https://dev.mysql.com/get/mysql-apt-config_0.8.19-1_all.deb
 sudo dpkg -i mysql-apt-config*
 sudo apt update
-sudo apt install mysql-server
+sudo apt -y install mysql-server
