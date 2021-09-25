@@ -56,7 +56,7 @@ Run the following commands in the Cloud Shell (replacing the variables with your
 
 
 ## Provision the GCP Infrastructure
-
+Forcing an execution of the Terraform pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
 
 Run the following command in the Cloud Shell to force an initial execution of the Terraform pipeline to provision the GCP APIs, storage, network, and compute stacks:
 

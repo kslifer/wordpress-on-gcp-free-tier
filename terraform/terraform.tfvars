@@ -16,7 +16,7 @@ run_service = "wp-yourdomain-com"
 # GitHub Username, Repo, and Branch
 # These values MUST be configured (except Branch)
 gh_username = "username"
-gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-com"
+gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
 gh_branch   = "^4-dev-terraform$" #"^master$"
 
 # Wordpress Configuration
