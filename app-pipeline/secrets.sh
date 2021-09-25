@@ -14,4 +14,7 @@ echo $(cat ./WORDPRESS_DB_PASSWORD) > ./run/secrets/WORDPRESS_DB_PASSWORD
 echo $(cat ./MYSQL_VM_EXT_IP) > ./run/secrets/MYSQL_VM_EXT_IP
 
 pwd
-ls -ls
+ls -l
+cd ./run/secrets
+ls -l
+echo $(cat WORDPRESS_TABLE_PREFIX)

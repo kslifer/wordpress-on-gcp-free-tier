@@ -16,7 +16,6 @@ steps:
     terraform output -raw artifact_repo > ../ARTIFACT_REPO
     terraform output -raw run_service > ../RUN_SERVICE
     terraform output -raw project_id > ../PROJECT_ID
-    
 # Step 1: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
