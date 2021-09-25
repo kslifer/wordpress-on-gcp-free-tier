@@ -1,7 +1,7 @@
 # These values MUST be configured
-project_id    = "huevos-hoy-1234" #"wp-yourdomain-com"
-media_bucket  = "huevos-hoy-1234" #"media-yourdomain-com"
-artifact_repo = "huevos-hoy-1234" #"docker-yourdomain-com"
+project_id    = "wpft-yourdomain-com"
+media_bucket  = "media-yourdomain-com"
+artifact_repo = "docker-yourdomain-com"
 
 # Google Cloud Resource Locations
 # These can be left as-is to run in South Carolina
@@ -10,14 +10,14 @@ zone   = "us-east1-b"
 
 # Google Cloud Compute Resource Names
 # These values MUST be configured
-mysql_vm    = "mysql-huevos-com" #"mysql-yourdomain-com"
-run_service = "wp-huevos-com"    #"wp-yourdomain-com"
+mysql_vm    = "mysql-yourdomain-com"
+run_service = "wp-yourdomain-com"
 
 # GitHub Username, Repo, and Branch
 # These values MUST be configured (except Branch)
-gh_username = "kslifer"                    #"username"
-gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
-gh_branch   = "^#4-dev-terraform$"         #"^master$"
+gh_username = "username"
+gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-com"
+gh_branch   = "^master$"
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured
