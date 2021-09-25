@@ -6,18 +6,18 @@ set -eEuo pipefail
 # Load config values
 # echo "Loading variables..."
 # source ./install/variables.conf
-pwd
+#pwd
 # Echo substitution variables
 #echo $WORDPRESS_TABLE_PREFIX
 #echo $WORDPRESS_DB_NAME
 #echo $WORDPRESS_DB_USER
 #echo $WORDPRESS_DB_PASSWORD
 #echo $MYSQL_VM_EXT_IP
-echo $(cat ./WORDPRESS_TABLE_PREFIX)
-echo $(cat ./WORDPRESS_DB_NAME)
-echo $(cat ./WORDPRESS_DB_USER)
-echo $(cat ./WORDPRESS_DB_PASSWORD)
-echo $(cat ./MYSQL_VM_EXT_IP)
+#echo $(cat ./WORDPRESS_TABLE_PREFIX)
+#echo $(cat ./WORDPRESS_DB_NAME)
+#echo $(cat ./WORDPRESS_DB_USER)
+#echo $(cat ./WORDPRESS_DB_PASSWORD)
+#echo $(cat ./MYSQL_VM_EXT_IP)
 
 # Create the directory in the build context
 mkdir -p ./run/secrets
@@ -35,5 +35,5 @@ echo $(cat ./WORDPRESS_DB_USER) > run/secrets/WORDPRESS_DB_USER
 echo $(cat ./WORDPRESS_DB_PASSWORD) > run/secrets/WORDPRESS_DB_PASSWORD
 echo $(cat ./MYSQL_VM_EXT_IP) > run/secrets/MYSQL_VM_EXT_IP
 
-cd ./run/secrets
-ls -l
+#cd ./run/secrets
+#ls -l
