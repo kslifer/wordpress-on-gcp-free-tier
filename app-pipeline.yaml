@@ -1,5 +1,5 @@
 steps:
-# Experimental Step: Bootstrap Environment Variables from Terraform
+# Experimental Step 00: Bootstrap Environment Variables from Terraform
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
