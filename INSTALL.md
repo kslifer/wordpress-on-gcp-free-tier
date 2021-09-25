@@ -20,8 +20,9 @@ The following commands can be used (replacing the variables with your configurat
     export GH_USERNAME="username"
     export GH_TOKEN="token"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
+    export GH_BRANCH="master"
 
-    git clone https://${GH_USERNAME}:${GH_TOKEN}@github.com/${GH_USERNAME}/${GH_REPO}.git
+    git clone https://${GH_USERNAME}:${GH_TOKEN}@github.com/${GH_USERNAME}/${GH_REPO}.git -b ${GH_BRANCH}
 
 
 ### Enable the Cloud Build API and Cloud Resource Manager API for pipeline execution
@@ -41,7 +42,7 @@ The following commands can be used (replacing the variables with your configurat
 ## Install the Cloud Build Github App
 In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).
 
-**NOTE: At step 8 and step 10, select your repo. At step 11, skip the option to create push triggers.**
+**NOTE: Skip the option to create a sample trigger. Only connect the repository**
 
 
 ## Configure the Infra Pipeline
@@ -55,9 +56,12 @@ Run the following commands in the Cloud Shell (replacing the variables with your
 
 
 ## Provision the GCP Infrastructure
+
+
 Run the following command in the Cloud Shell to force an initial execution of the Terraform pipeline to provision the GCP APIs, storage, network, and compute stacks:
 
-    gcloud beta builds triggers run --branch=${GH_BRANCH} github-trigger-infra
+    export TRIGGER_ID=$(gcloud beta builds triggers list --format="value(id)")
+    gcloud beta builds triggers run ${TRIGGER_ID} --project=${GOOGLE_CLOUD_PROJECT} --region=us-east1 --branch=${GH_BRANCH} --verbosity=debug
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
