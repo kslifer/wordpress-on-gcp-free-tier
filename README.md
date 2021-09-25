@@ -54,7 +54,7 @@ But please **do this first**:
 - Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
 - Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
-- Update the [terraform.tfvars(terraform/terraform.tfvars) file with your planned configuration
+- Update the [terraform.tfvars](terraform/terraform.tfvars) file with your planned configuration
 - Commit the changes back into your private repo
 
 The install process is highly automated and reasonably configurable, leveraging Terraform, shell scripts, and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
