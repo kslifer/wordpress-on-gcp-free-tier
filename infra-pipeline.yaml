@@ -16,28 +16,22 @@ steps:
       echo "Bucket gs://$PROJECT_ID-tfstate/ exists; skipping creation"
       exit 0
     fi
-# Step 1: Configure the GCP Project ID in the TF files with the default $PROJECT_ID substitution
+# Step 1: Configure the GCP Project ID in the TF files with the default $PROJECT_ID substitution and execute terraform init
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
-# Step 2: Execute terraform init
-- name: 'hashicorp/terraform:1.0.7'
-  entrypoint: 'sh'
-  args:
-  - '-c'
-  - |
     cd terraform && terraform init
-# Step 3: Execute terraform plan
+# Step 2: Execute terraform plan
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
     cd terraform && terraform plan -out=tfplan
-# Step 4: Execute terraform apply
+# Step 3: Execute terraform apply
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:

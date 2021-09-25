@@ -54,10 +54,10 @@ But please **do this first**:
 - Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
 - Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
-- Update the [variables.conf](install/variables.conf) file with your planned configuration
+- Update the [terraform.tfvars(terraform/terraform.tfvars) file with your planned configuration
 - Commit the changes back into your private repo
 
-The install process is highly automated and reasonably configurable, leveraging shell scripts and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
+The install process is highly automated and reasonably configurable, leveraging Terraform, shell scripts, and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
 
 
 ## Limitations and Future Considerations
@@ -73,7 +73,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 ## Maintenance
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be manually configured and executed. Updates to MySQL also need to be manually applied.
-- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the pipeline to deploy an updated container to the Cloud Run service.
+- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the app pipeline to deploy an updated container to the Cloud Run service.
 - Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to configuring the new zip file URL).
 
 

@@ -1,24 +1,40 @@
 steps:
+# Experimental Step: Bootstrap Environment Variables from Terraform
+- name: 'hashicorp/terraform:1.0.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
+    cd terraform && terraform init
+    export WORDPRESS_TABLE_PREFIX=$(terraform output -raw wordpress_table_prefix)
+    export WORDPRESS_DB_NAME=$(terraform output -raw wordpress_db_name)
+    export WORDPRESS_DB_USER=$(terraform output -raw wordpress_db_user)
+    export WORDPRESS_DB_PASSWORD=$(terraform output -raw wordpress_db_password)
+    export MYSQL_VM_EXT_IP=$(terraform output -raw mysql_vm_ext_ip)
+    export REGION=$(terraform output -raw region)
+    export ARTIFACT_REPO=$(terraform output -raw artifact_repo)
+    export RUN_SERVICE=$(terraform output -raw run_service)
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/wordpress.sh']
+  args: ['./app-pipeline/wordpress.sh']
 # Step 1: Prepare Themes
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/themes.sh']
+  args: ['./app-pipeline/themes.sh']
 # Step 2: Prepare Plugins
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/plugins.sh']
+  args: ['./app-pipeline/plugins.sh']
 # Step 3: Apply Customizations
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/customizations.sh']
+  args: ['./app-pipeline/customizations.sh']
 # Step 4: Generate Docker Secrets for Wordpress Container
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/secrets.sh']
+  args: ['./app-pipeline/secrets.sh']
 # Step 5: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
@@ -37,7 +53,7 @@ steps:
 # Step 9: Manage Artifact Registry image history
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./install/pipeline/images.sh']
+  args: ['./app-pipeline/images.sh']
 substitutions:
   _ARTIFACT_REPO: docker-yourdomain-com # default
   _REGION: us-east1 # default

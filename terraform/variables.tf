@@ -36,8 +36,8 @@ variable "run_service" {
   type        = string
 }
 
-# GitHub Username and Repo
-# These values MUST be configured
+# GitHub Username, Repo, and Branch
+# These values MUST be configured (except Branch)
 variable "gh_username" {
   description = "GitHub User Name"
   type        = string

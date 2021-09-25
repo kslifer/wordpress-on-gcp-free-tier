@@ -5,7 +5,7 @@ These instructions will leverage the use of two interfaces into your GCP environ
 - The [Cloud Console](https://cloud.google.com/cloud-console): a web-based admin interface
 - The [Cloud Shell](https://cloud.google.com/shell): a Linux terminal command line interface
 
-Provisioning steps are a combination of bash scripts that wrap [Cloud SDK](https://cloud.google.com/sdk/) `gcloud` | `gsutil` commands, point-and-click steps in the Cloud Console, and some unavoidable manual configuration.
+Provisioning steps are a combination of bash scripts that wrap [Cloud SDK](https://cloud.google.com/sdk/) `gcloud` commands, [Terraform](https://www.terraform.io/) automation through a [Cloud Build](https://cloud.google.com/build) pipeline, and some unavoidable point-and-click steps in the Cloud Console.
 
 
 ## Environment Setup
@@ -15,10 +15,13 @@ Run `gcloud auth login` to ensure that your Cloud Shell session is properly auth
 
 Finally, clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
-    git clone https://username:oauthtoken@github.com/username/wordpress-on-gcp-free-tier-yourdomain-com.git
+The following commands can be used (replacing the variables with your configuration):
 
+    export GH_USERNAME="username"
+    export GH_TOKEN="token"
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
 
-
+    git clone https://${GH_USERNAME}:${GH_TOKEN}@github.com/${GH_USERNAME}/${GH_REPO}.git
 
 
 ### Enable the Cloud Build API and Cloud Resource Manager API for pipeline execution
@@ -27,59 +30,57 @@ Finally, clone your private repo into your working Cloud Shell directory. This w
     gcloud services enable cloudbuild.googleapis.com
     gcloud services enable cloudresourcemanager.googleapis.com
 
+
 ### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
   Run the following commands in the Cloud Shell to update the IAM permissions:
  
     export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${PROJECT_NUM}@cloudbuild.gserviceaccount.com" --role='roles/owner'
 
+
 ## Install the Cloud Build Github App
 In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).
 
+**NOTE: At step 8 and step 10, select your repo. At step 11, skip the option to create push triggers.**
+
+
 ## Configure the Infra Pipeline
-## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
-Run the following command in the Cloud Shell to configure a trigger for the Terraform CI/CD pipeline:
+Run the following commands in the Cloud Shell (replacing the variables with your configuration) to configure a trigger for the Terraform CI/CD pipeline:
 
-    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
+    export GH_USERNAME="username"
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
+    export GH_BRANCH="^master$"
 
-## Configure the App Pipeline
-## TO DO: PUT INTO A SHELL SCRIPT THAT SOURCES VARIABLES
-Run the following command in the Cloud Shell to configure a trigger for the Cloud Run CI/CD pipeline:
-
-    gcloud beta builds triggers create github --name="github-trigger-app" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern="^master$" --included-files="Dockerfile, wordpress-*/*, app-pipeline.yaml" --build-config="app-pipeline.yaml" --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
+    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern=${GH_BRANCH} --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
 
 
+## Provision the GCP Infrastructure
+Run the following command in the Cloud Shell to force an initial execution of the Terraform pipeline to provision the GCP APIs, storage, network, and compute stacks:
+
+    gcloud beta builds triggers run --branch=master github-trigger-infra
+
+The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
 
-## Initial GCP Service Provisioning
-Provision the initial set of GCP services by running the **1_provision_infrastructure.sh** script in Cloud Shell:
+## Transfer configuration script to the MySQL VM
+Run the following commands in the Cloud Shell (replacing the variables with your configuration) to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
-    cd wordpress-on-gcp-free-tier-yourdomain-com/install/ && bash 1_provision_infrastructure.sh
+    export MYSQL_VM="127.0.0.1"
+    export ZONE="us-east1-b"
 
-This script will enable the required Google APIs, then provision the storage, network, and compute stacks.
+    gcloud compute scp configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
 
-It will automatically update the local variables.conf file with the static external IP address that is provisioned for the MySQL VM. **Commit this change back into your repo before continuing**:
-
-    git commit -a -m "Updated external IP in variables.conf"
-    git push origin
-
-
-## Script Transfer to the MySQL VM
-Copy the **scp 2_configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
-
-    source variables.conf && gcloud compute scp 2_configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
-
-This command could fail while the newly provisioned resources are propagating across Google Cloud. If it does, try again in a minute.
+This command could fail while the VM creation is propagating across Google Cloud. If it does, try again in a minute.
 
 
 ## MySQL VM Configuration
-SSH into the MySQL VM through the Cloud Shell session:
+Run the following commands in the Cloud Shell to SSH into the MySQL VM:
 
     gcloud compute ssh ${MYSQL_VM} --tunnel-through-iap --zone=$ZONE
 
-Run the **scp 2_configure_mysql_vm.sh** script that was copied over in Cloud Shell:
+Execute the **configure_mysql_vm.sh** script that was copied over:
 
-    bash 2_configure_mysql_vm.sh
+    bash configure_mysql_vm.sh
 
 This script will allocate a memory swap file on the persistent disk, install the GCP OS Config agent, and start the MySQL installer. Interaction is required.
 
@@ -108,22 +109,11 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 
 Run `sudo service mysql restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
 
-## Install the Cloud Build Github App
-In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).
 
-**NOTE: At step 8 and step 10, select your repo. At step 11, skip the option to create push triggers.**
+## Deploy Wordpress
+Run the following command in the Cloud Shell to force an initial execution of the application pipeline to build and deploy the Wordpress frontend into Cloud Run:
 
-
-## Configure the CI/CD Pipeline and Deploy Wordpress
-Provision the Cloud Build GitHub trigger by running the **3_configure_build_trigger.sh** script in Cloud Shell:
-
-    source variables.conf && bash 3_configure_build_trigger.sh
-
-This script will configure a trigger that will execute the CI/CD pipeline for the Wordpress frontend when any change is checked into your GitHub repo (excluding markdown files and the variables.conf file).
-
-Force an initial pipeline execution to build and deploy the Wordpress frontend into Cloud Run:
-
-    gcloud beta builds triggers run --branch=master github-trigger
+    gcloud beta builds triggers run --branch=master github-trigger-app
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 

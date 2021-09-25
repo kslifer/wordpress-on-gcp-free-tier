@@ -13,8 +13,8 @@ zone   = "us-east1-b"
 mysql_vm    = "mysql-huevos-com" #"mysql-yourdomain-com"
 run_service = "wp-huevos-com"    #"wp-yourdomain-com"
 
-# GitHub Username and Repo
-# These values MUST be configured
+# GitHub Username, Repo, and Branch
+# These values MUST be configured (except Branch)
 gh_username = "kslifer"                    #"username"
 gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
 gh_branch   = "^#4-dev-terraform$"         #"^master$"
