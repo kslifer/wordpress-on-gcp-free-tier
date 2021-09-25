@@ -36,3 +36,4 @@ wordpress_db_password  = "WordPass1234!"
 #  "artifactregistry.googleapis.com",
 #  "containeranalysis.googleapis.com",
 #]
+

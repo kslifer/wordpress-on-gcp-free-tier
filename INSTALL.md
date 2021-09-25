@@ -11,9 +11,7 @@ Provisioning steps are a combination of bash scripts that wrap [Cloud SDK](https
 ## Environment Setup
 Log into the Cloud Console at https://console.cloud.google.com/, then activate the Cloud Shell interface.
 
-Run `gcloud auth login` to ensure that your Cloud Shell session is properly authorized.
-
-Finally, clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
+Clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
 The following commands can be used **(replacing the variables with your configuration)**:
 
