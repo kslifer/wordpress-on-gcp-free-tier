@@ -36,4 +36,3 @@ gcp_service_apis = [
   "artifactregistry.googleapis.com",
   "containeranalysis.googleapis.com",
 ]
-
