@@ -15,7 +15,7 @@ Run `gcloud auth login` to ensure that your Cloud Shell session is properly auth
 
 Finally, clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
-The following commands can be used (replacing the variables with your configuration):
+The following commands can be used **(replacing the variables with your configuration)**:
 
     export GH_USERNAME="username"
     export GH_TOKEN="token"
@@ -30,6 +30,11 @@ The following commands can be used (replacing the variables with your configurat
 
     gcloud services enable cloudbuild.googleapis.com
     gcloud services enable cloudresourcemanager.googleapis.com
+    gcloud services enable compute.googleapis.com
+    gcloud services enable run.googleapis.com
+    gcloud services enable osconfig.googleapis.com
+    gcloud services enable artifactregistry.googleapis.com
+    gcloud services enable containeranalysis.googleapis.com
 
 
 ### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
@@ -46,7 +51,7 @@ In the Cloud Console, follow steps [in this article](https://cloud.google.com/cl
 
 
 ## Configure the Infra Pipeline
-Run the following commands in the Cloud Shell (replacing the variables with your configuration) to configure a trigger for the Terraform CI/CD pipeline:
+Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure a trigger for the Terraform CI/CD pipeline:
 
     export GH_USERNAME="username"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
@@ -56,18 +61,13 @@ Run the following commands in the Cloud Shell (replacing the variables with your
 
 
 ## Provision the GCP Infrastructure
-Forcing an execution of the Terraform pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
-
-Run the following command in the Cloud Shell to force an initial execution of the Terraform pipeline to provision the GCP APIs, storage, network, and compute stacks:
-
-    export TRIGGER_ID=$(gcloud beta builds triggers list --format="value(id)")
-    gcloud beta builds triggers run ${TRIGGER_ID} --project=${GOOGLE_CLOUD_PROJECT} --region=us-east1 --branch=${GH_BRANCH} --verbosity=debug
+Forcing an execution of the infrastructure pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
 
 ## Transfer configuration script to the MySQL VM
-Run the following commands in the Cloud Shell (replacing the variables with your configuration) to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
+Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
     export MYSQL_VM="mysql-yourdomain-com"
     export ZONE="us-east1-b"
@@ -115,9 +115,7 @@ Run `sudo service mysql restart` to restart the MySQL service, then `exit` to ex
 
 
 ## Deploy Wordpress
-Run the following command in the Cloud Shell to force an initial execution of the application pipeline to build and deploy the Wordpress frontend into Cloud Run:
-
-    gcloud beta builds triggers run --branch=${GH_BRANCH} github-trigger-app
+Forcing an execution of the application pipeline requires a new commit in one of the Wordpress folders. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 

@@ -1,6 +1,6 @@
 # These values MUST be configured
-project_id    = "wpft-yourdomain-com-99"
-media_bucket  = "media-yourdomain-com-99"
+project_id    = "wpft-yourdomain-com-999"
+media_bucket  = "media-yourdomain-com-999"
 artifact_repo = "docker-yourdomain-com"
 
 # Google Cloud Resource Locations
@@ -27,12 +27,12 @@ wordpress_db_user      = "wordpress"
 wordpress_db_password  = "WordPass1234!"
 
 # GCP service APIs to enable
-gcp_service_apis = [
-  "cloudresourcemanager.googleapis.com",
-  "cloudbuild.googleapis.com",
-  "compute.googleapis.com",
-  "run.googleapis.com",
-  "osconfig.googleapis.com",
-  "artifactregistry.googleapis.com",
-  "containeranalysis.googleapis.com",
-]
+#gcp_service_apis = [
+#  "cloudresourcemanager.googleapis.com",
+#  "cloudbuild.googleapis.com",
+#  "compute.googleapis.com",
+#  "run.googleapis.com",
+#  "osconfig.googleapis.com",
+#  "artifactregistry.googleapis.com",
+#  "containeranalysis.googleapis.com",
+#]
