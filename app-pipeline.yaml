@@ -1,5 +1,5 @@
 steps:
-# Experimental Step 000: Log substitution variables
+# Step 0: Extract variables from Terraform
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
@@ -16,39 +16,39 @@ steps:
     terraform output -raw artifact_repo > ../ARTIFACT_REPO
     terraform output -raw run_service > ../RUN_SERVICE
     terraform output -raw project_id > ../PROJECT_ID
-# Step 0: Prepare Wordpress
+# Step 1: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/wordpress.sh']
-# Step 1: Prepare Themes
+# Step 2: Prepare Themes
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/themes.sh']
-# Step 2: Prepare Plugins
+# Step 3: Prepare Plugins
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/plugins.sh']
-# Step 3: Apply Customizations
+# Step 4: Apply Customizations
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/customizations.sh']
-# Step 4: Generate Docker Secrets for Wordpress Container
+# Step 5: Generate Docker Secrets for Wordpress Container
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/secrets.sh']
-# Step 5: Build the custom Wordpress image for Artifact Registry
+# Step 6: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
-# Step 6: Push the image to Artifact Registry
+# Step 7: Push the image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged']
-# Step 7: Deploy the image to Cloud Run
+# Step 8: Deploy the image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST']
-# Step 8: Direct traffic to the new version
+# Step 9: Direct traffic to the new version
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'services', 'update-traffic', '${_RUN_SERVICE}', '--to-latest', '--region', '${_REGION}', '--platform', 'managed']
-# Step 9: Manage Artifact Registry image history
+# Step 10: Manage Artifact Registry image history
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
   args: ['./app-pipeline/images.sh']
