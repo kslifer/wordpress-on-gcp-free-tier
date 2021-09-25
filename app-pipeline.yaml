@@ -1,28 +1,18 @@
 steps:
-# Experimental Step 000: Bootstrap Environment Variables from Terraform
-- name: 'hashicorp/terraform:1.0.7'
+# Experimental Step 000: Log substitution variables
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
-    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
-    cd terraform && terraform init
-    export WORDPRESS_TABLE_PREFIX=$(terraform output -raw wordpress_table_prefix)
-    export WORDPRESS_DB_NAME=$(terraform output -raw wordpress_db_name)
-    export WORDPRESS_DB_USER=$(terraform output -raw wordpress_db_user)
-    export WORDPRESS_DB_PASSWORD=$(terraform output -raw wordpress_db_password)
-    export MYSQL_VM_EXT_IP=$(terraform output -raw mysql_vm_ext_ip)
-    export REGION=$(terraform output -raw region)
-    export ARTIFACT_REPO=$(terraform output -raw artifact_repo)
-    export RUN_SERVICE=$(terraform output -raw run_service)
-    echo $WORDPRESS_TABLE_PREFIX
-    echo $WORDPRESS_DB_NAME
-    echo $WORDPRESS_DB_USER
-    echo $WORDPRESS_DB_PASSWORD
-    echo $MYSQL_VM_EXT_IP
-    echo $REGION
-    echo $ARTIFACT_REPO
-    echo $RUN_SERVICE
+    echo ${_WORDPRESS_TABLE_PREFIX}
+    echo ${_WORDPRESS_DB_NAME}
+    echo ${_WORDPRESS_DB_USER}
+    echo ${_WORDPRESS_DB_PASSWORD}
+    echo ${_MYSQL_VM_EXT_IP}
+    echo ${_REGION}
+    echo ${_ARTIFACT_REPO}
+    echo ${_RUN_SERVICE}
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
@@ -66,3 +56,8 @@ substitutions:
   _ARTIFACT_REPO: docker-yourdomain-com # default
   _REGION: us-east1 # default
   _RUN_SERVICE: wp-yourdomain-com # default
+  _WORDPRESS_TABLE_PREFIX: wp_ # default
+  _WORDPRESS_DB_NAME: wordpress # default
+  _WORDPRESS_DB_USER: wordpress # default
+  _WORDPRESS_DB_PASSWORD: WordPass1234! # default
+  _MYSQL_VM_EXT_IP: 127.0.0.1 # default
