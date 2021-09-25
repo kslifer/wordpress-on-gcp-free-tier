@@ -23,8 +23,8 @@ The following commands can be used **(replacing the variables with your configur
     git clone https://${GH_USERNAME}:${GH_TOKEN}@github.com/${GH_USERNAME}/${GH_REPO}.git -b ${GH_BRANCH}
 
 
-### Enable the Cloud Build API and Cloud Resource Manager API for pipeline execution
- Run the following commands in the Cloud Shell:
+### Enable the GCP Service APIs that will be used
+ Run the following commands in the Cloud Shell to enable the required APIs (this is done to avoid failures that occur on Terraform applies because API enablement is eventually consistent):
 
     gcloud services enable cloudbuild.googleapis.com
     gcloud services enable cloudresourcemanager.googleapis.com
