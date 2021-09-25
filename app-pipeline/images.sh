@@ -3,24 +3,7 @@
 # failsafe
 set -eEuo pipefail
 
-# Load config values
-# echo "Loading variables..."
-# source ./install/variables.conf
-#pwd
-# Echo substitution variables
-#echo ${_REGION}
-#echo ${_ARTIFACT_REPO}
-#echo ${_RUN_SERVICE}
-#echo $(cat ./REGION)
-#echo $(cat ./ARTIFACT_REPO)
-#echo $(cat ./RUN_SERVICE)
-
-# KMS NOTE: "--sort-by" command seems to be broke; modified commands are below this block
-# test - list all images and count
-#echo "Listing image history"
-#gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags --sort-by=UPDATE_TIME
-#echo "Counting image history"
-#gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
+# list all images and count
 echo "Counting image history"
 gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags  | grep -v DIGEST | wc -l
 
@@ -64,11 +47,6 @@ for DIGEST in $(gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.d
   gcloud artifacts docker images delete -q "$(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE)@${DIGEST}"
 done
 
-# KMS NOTE: "--sort-by" command seems to be broke; modified commands are below this block
-# test - list all images and count
-#echo "Listing image history"
-#gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags --sort-by=UPDATE_TIME
-#echo "Counting image history"
-#gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags --sort-by=UPDATE_TIME  | grep -v DIGEST | wc -l
+# list all images and count
 echo "Counting image history"
 gcloud artifacts docker images list $(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./ARTIFACT_REPO)/$(cat ./RUN_SERVICE) --include-tags  | grep -v DIGEST | wc -l
