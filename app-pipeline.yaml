@@ -15,6 +15,7 @@ steps:
     terraform output -raw region > /workspace/REGION
     terraform output -raw artifact_repo > /workspace/ARTIFACT_REPO
     terraform output -raw run_service > /workspace/RUN_SERVICE
+    
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
