@@ -7,15 +7,15 @@ steps:
   - |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
     cd terraform && terraform init
-    terraform output -raw wordpress_table_prefix > /workspace/WORDPRESS_TABLE_PREFIX
-    terraform output -raw wordpress_db_name > /workspace/WORDPRESS_DB_NAME
-    terraform output -raw wordpress_db_user > /workspace/WORDPRESS_DB_USER
-    terraform output -raw wordpress_db_password > /workspace/WORDPRESS_DB_PASSWORD
-    terraform output -raw mysql_vm_ext_ip > /workspace/MYSQL_VM_EXT_IP
-    terraform output -raw region > /workspace/REGION
-    terraform output -raw artifact_repo > /workspace/ARTIFACT_REPO
-    terraform output -raw run_service > /workspace/RUN_SERVICE
-    
+    terraform output -raw wordpress_table_prefix > ../WORDPRESS_TABLE_PREFIX
+    terraform output -raw wordpress_db_name > ../WORDPRESS_DB_NAME
+    terraform output -raw wordpress_db_user > ../WORDPRESS_DB_USER
+    terraform output -raw wordpress_db_password > ../WORDPRESS_DB_PASSWORD
+    terraform output -raw mysql_vm_ext_ip > ../MYSQL_VM_EXT_IP
+    terraform output -raw region > ../REGION
+    terraform output -raw artifact_repo > ../ARTIFACT_REPO
+    terraform output -raw run_service > ../RUN_SERVICE
+
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
