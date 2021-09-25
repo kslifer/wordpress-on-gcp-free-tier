@@ -13,7 +13,7 @@ steps:
     echo ${_REGION}
     echo ${_ARTIFACT_REPO}
     echo ${_RUN_SERVICE}
-    
+
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
@@ -33,7 +33,16 @@ steps:
 # Step 4: Generate Docker Secrets for Wordpress Container
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args: ['./app-pipeline/secrets.sh']
+  args:
+  - '-c'
+  - |
+    export $WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX}
+    export $WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME}
+    export $WORDPRESS_DB_USER=${_WORDPRESS_DB_USER}
+    export $WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD}
+    export $MYSQL_VM_EXT_IP=${_MYSQL_VM_EXT_IP}
+    ./app-pipeline/secrets.sh
+  # args: ['./app-pipeline/secrets.sh']
 # Step 5: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
