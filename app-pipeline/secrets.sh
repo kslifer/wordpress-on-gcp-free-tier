@@ -4,8 +4,15 @@
 set -eEuo pipefail
 
 # Load config values
-echo "Loading variables..."
-source ./install/variables.conf
+# echo "Loading variables..."
+# source ./install/variables.conf
+
+# Echo variables from Teraform
+echo $WORDPRESS_TABLE_PREFIX
+echo $WORDPRESS_DB_NAME
+echo $WORDPRESS_DB_USER
+echo $WORDPRESS_DB_PASSWORD
+echo $MYSQL_VM_EXT_IP
 
 # Create the directory in the build context
 mkdir -p ./run/secrets
