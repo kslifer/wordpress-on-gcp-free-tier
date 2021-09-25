@@ -1,5 +1,5 @@
 steps:
-# Experimental Step 00: Bootstrap Environment Variables from Terraform
+# Experimental Step 000: Bootstrap Environment Variables from Terraform
 - name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
@@ -15,6 +15,14 @@ steps:
     export REGION=$(terraform output -raw region)
     export ARTIFACT_REPO=$(terraform output -raw artifact_repo)
     export RUN_SERVICE=$(terraform output -raw run_service)
+    echo $WORDPRESS_TABLE_PREFIX
+    echo $WORDPRESS_DB_NAME
+    echo $WORDPRESS_DB_USER
+    echo $WORDPRESS_DB_PASSWORD
+    echo $MYSQL_VM_EXT_IP
+    echo $REGION
+    echo $ARTIFACT_REPO
+    echo $RUN_SERVICE
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
