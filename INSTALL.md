@@ -57,7 +57,7 @@ Run the following commands in the Cloud Shell (replacing the variables with your
 ## Provision the GCP Infrastructure
 Run the following command in the Cloud Shell to force an initial execution of the Terraform pipeline to provision the GCP APIs, storage, network, and compute stacks:
 
-    gcloud beta builds triggers run --branch=master github-trigger-infra
+    gcloud beta builds triggers run --branch=${GH_BRANCH} github-trigger-infra
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
@@ -113,7 +113,7 @@ Run `sudo service mysql restart` to restart the MySQL service, then `exit` to ex
 ## Deploy Wordpress
 Run the following command in the Cloud Shell to force an initial execution of the application pipeline to build and deploy the Wordpress frontend into Cloud Run:
 
-    gcloud beta builds triggers run --branch=master github-trigger-app
+    gcloud beta builds triggers run --branch=${GH_BRANCH} github-trigger-app
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
