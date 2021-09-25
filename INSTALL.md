@@ -65,7 +65,7 @@ The build process can be monitored in the Cloud Console at the [Cloud Build Hist
 ## Transfer configuration script to the MySQL VM
 Run the following commands in the Cloud Shell (replacing the variables with your configuration) to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
-    export MYSQL_VM="127.0.0.1"
+    export MYSQL_VM="mysql-yourdomain-com"
     export ZONE="us-east1-b"
 
     gcloud compute scp configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
