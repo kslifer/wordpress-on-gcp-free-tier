@@ -181,7 +181,7 @@ resource "google_cloudbuild_trigger" "app-cicd-trigger" {
     _WORDPRESS_DB_NAME   = var.wordpress_db_name
     _WORDPRESS_DB_USER   = var.wordpress_db_user
     _WORDPRESS_DB_PASSWORD   = var.wordpress_db_password
-    _MYSQL_VM_EXT_IP   = var.mysql_vm_ext_ip
+    _MYSQL_VM_EXT_IP   = google_compute_address.mysql-external-ip.address
   }
 
   included_files = ["Dockerfile", "wordpress-*/*", "app-pipeline.yaml"]
