@@ -38,7 +38,7 @@ steps:
   args: ['./app-pipeline/secrets.sh']
 # Step 5: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '$(cat ./REGION)-docker.pkg.dev/$(cat ./PROJECT_ID)/$(cat ./_ARTIFACT_REPO)/$(cat ./_RUN_SERVICE):staged', '.']
+  args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
 # Step 6: Push the image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged']
