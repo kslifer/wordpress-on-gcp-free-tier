@@ -72,7 +72,7 @@ variable "wordpress_db_password" {
 }
 
 # GCP service APIs to enable
-variable "gcp_service_apis" {
-  description = "The GCP Service APIs to be enabled within the project"
-  type        = list(string)
-}
+#variable "gcp_service_apis" {
+#  description = "The GCP Service APIs to be enabled within the project"
+#  type        = list(string)
+#}
