@@ -8,11 +8,16 @@ set -eEuo pipefail
 # source ./install/variables.conf
 
 # Echo substitution variables
-echo $WORDPRESS_TABLE_PREFIX
-echo $WORDPRESS_DB_NAME
-echo $WORDPRESS_DB_USER
-echo $WORDPRESS_DB_PASSWORD
-echo $MYSQL_VM_EXT_IP
+#echo $WORDPRESS_TABLE_PREFIX
+#echo $WORDPRESS_DB_NAME
+#echo $WORDPRESS_DB_USER
+#echo $WORDPRESS_DB_PASSWORD
+#echo $MYSQL_VM_EXT_IP
+cat /workspace/WORDPRESS_TABLE_PREFIX
+cat /workspace/WORDPRESS_DB_NAME
+cat /workspace/WORDPRESS_DB_USER
+cat /workspace/WORDPRESS_DB_PASSWORD
+cat /workspace/MYSQL_VM_EXT_IP
 
 # Create the directory in the build context
 mkdir -p ./run/secrets

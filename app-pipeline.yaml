@@ -1,19 +1,20 @@
 steps:
 # Experimental Step 000: Log substitution variables
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'hashicorp/terraform:1.0.7'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
-    echo ${_WORDPRESS_TABLE_PREFIX}
-    echo ${_WORDPRESS_DB_NAME}
-    echo ${_WORDPRESS_DB_USER}
-    echo ${_WORDPRESS_DB_PASSWORD}
-    echo ${_MYSQL_VM_EXT_IP}
-    echo ${_REGION}
-    echo ${_ARTIFACT_REPO}
-    echo ${_RUN_SERVICE}
-
+    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
+    cd terraform && terraform init
+    terraform output -raw wordpress_table_prefix > /workspace/WORDPRESS_TABLE_PREFIX
+    terraform output -raw wordpress_db_name > /workspace/WORDPRESS_DB_NAME
+    terraform output -raw wordpress_db_user > /workspace/WORDPRESS_DB_USER
+    terraform output -raw wordpress_db_password > /workspace/WORDPRESS_DB_PASSWORD
+    terraform output -raw mysql_vm_ext_ip > /workspace/MYSQL_VM_EXT_IP
+    terraform output -raw region > /workspace/REGION
+    terraform output -raw artifact_repo > /workspace/ARTIFACT_REPO
+    terraform output -raw run_service > /workspace/RUN_SERVICE
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
@@ -33,16 +34,7 @@ steps:
 # Step 4: Generate Docker Secrets for Wordpress Container
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    export $$WORDPRESS_TABLE_PREFIX=${_WORDPRESS_TABLE_PREFIX}
-    export $$WORDPRESS_DB_NAME=${_WORDPRESS_DB_NAME}
-    export $$WORDPRESS_DB_USER=${_WORDPRESS_DB_USER}
-    export $$WORDPRESS_DB_PASSWORD=${_WORDPRESS_DB_PASSWORD}
-    export $$MYSQL_VM_EXT_IP=${_MYSQL_VM_EXT_IP}
-    ./app-pipeline/secrets.sh
-  # args: ['./app-pipeline/secrets.sh']
+  args: ['./app-pipeline/secrets.sh']
 # Step 5: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
@@ -66,8 +58,3 @@ substitutions:
   _ARTIFACT_REPO: docker-yourdomain-com # default
   _REGION: us-east1 # default
   _RUN_SERVICE: wp-yourdomain-com # default
-  _WORDPRESS_TABLE_PREFIX: wp_ # default
-  _WORDPRESS_DB_NAME: wordpress # default
-  _WORDPRESS_DB_USER: wordpress # default
-  _WORDPRESS_DB_PASSWORD: WordPass1234! # default
-  _MYSQL_VM_EXT_IP: 127.0.0.1 # default
