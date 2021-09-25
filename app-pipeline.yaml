@@ -13,6 +13,7 @@ steps:
     echo ${_REGION}
     echo ${_ARTIFACT_REPO}
     echo ${_RUN_SERVICE}
+    
 # Step 0: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   entrypoint: 'bash'

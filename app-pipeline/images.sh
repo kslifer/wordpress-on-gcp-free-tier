@@ -7,10 +7,10 @@ set -eEuo pipefail
 # echo "Loading variables..."
 # source ./install/variables.conf
 
-# Echo variables from Teraform
-echo $REGION
-echo $ARTIFACT_REPO
-echo $RUN_SERVICE
+# Echo substitution variables
+echo ${_REGION}
+echo ${_ARTIFACT_REPO}
+echo ${_RUN_SERVICE}
 
 # KMS NOTE: "--sort-by" command seems to be broke; modified commands are below this block
 # test - list all images and count
