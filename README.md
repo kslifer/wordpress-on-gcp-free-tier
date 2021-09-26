@@ -50,7 +50,7 @@ Media storage and request processing is offloaded to Cloud Storage through the [
 Head on over to the [Install Guide](INSTALL.md) for step by step instructions.
 
 But please **do this first**:
-- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's variables.conf file)
+- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's terraform.tfvars file)
 - Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
 - Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role

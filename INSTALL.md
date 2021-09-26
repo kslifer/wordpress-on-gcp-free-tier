@@ -15,7 +15,7 @@ Clone your private repo into your working Cloud Shell directory. This will requi
 
 The following commands can be used **(replacing the variables with your configuration)**:
 
-    export GH_USERNAME="username"
+    export GH_USERNAME="your_username"
     export GH_TOKEN="token"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH="master"
@@ -24,7 +24,9 @@ The following commands can be used **(replacing the variables with your configur
 
 
 ### Enable the GCP Service APIs that will be used
- Run the following commands in the Cloud Shell to enable the required APIs (this is done to avoid failures that occur on Terraform applies because API enablement is eventually consistent):
+ Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid failures that occur on Terraform applies because API enablement is eventually consistent):
+
+    bash GH_REPO/install/enable_gcp_apis.sh
 
     gcloud services enable cloudbuild.googleapis.com
     gcloud services enable cloudresourcemanager.googleapis.com
@@ -150,6 +152,6 @@ At this point, it's safe to nevigate to [www.yourdomain.com](https://www.yourdom
 
 Themes and Plugins that were built into the image will be available in the Dashboard. Activate and customize them - changes will be persisted into the MySQL database.
 
-The WP-Stateless plugin should be activated first and configured to your GCP project and the GCS media bucket configured in variables.conf through the automated setup process. Don't setup a new GCP project and bucket! This plugin will redirect all media uploads to a GCS bucket in GCP, ensuring that the media is persisted across container instances and the Wordpress frontend remains stateless.
+The WP-Stateless plugin should be activated first and configured to your GCP project and the GCS media bucket configured in terraform.tfvars through the automated setup process. Don't setup a new GCP project and bucket! This plugin will redirect all media uploads to a GCS bucket in GCP, ensuring that the media is persisted across container instances and the Wordpress frontend remains stateless.
 
 Happy blogging!
