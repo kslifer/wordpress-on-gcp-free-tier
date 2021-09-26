@@ -1,6 +1,6 @@
 # These values MUST be configured
-project_id    = "wpft-yourdomain-com-888"
-media_bucket  = "media-yourdomain-com-888"
+project_id    = "wpft-yourdomain-com"
+media_bucket  = "media-yourdomain-com"
 artifact_repo = "docker-yourdomain-com"
 
 # Google Cloud Resource Locations
@@ -15,9 +15,9 @@ run_service = "wp-yourdomain-com"
 
 # GitHub Username, Repo, and Branch
 # These values MUST be configured (except Branch)
-gh_username = "kslifer" #"username"
-gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
-gh_branch   = "^#4-dev-terraform$" #"^master$"
+gh_username = "your_username"
+gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-com"
+gh_branch   = "^master$"
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured
