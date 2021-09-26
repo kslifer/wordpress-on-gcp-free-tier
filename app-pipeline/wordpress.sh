@@ -4,19 +4,16 @@
 set -eEuo pipefail
 
 # copy and run the download script
-cp ./install/pipeline/download.sh ./wordpress-plugins
-cd wordpress-plugins
+cp ./app-pipeline/download.sh ./wordpress-core
+cd wordpress-core
 chmod +x download.sh
 ./download.sh
 cd ..
 
-# remove default plugins
-rm -r ./wordpress-core/wordpress/wp-content/plugins/*
-
-# unpack custom plugins
+# unpack wordpress
 apt-get update
 apt-get install -y unzip
-cd wordpress-plugins
+cd wordpress-core
 for zip in *.zip
 do
     dirname=`echo $zip | sed 's/\.zip$//'`

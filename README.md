@@ -50,14 +50,14 @@ Media storage and request processing is offloaded to Cloud Storage through the [
 Head on over to the [Install Guide](INSTALL.md) for step by step instructions.
 
 But please **do this first**:
-- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's variables.conf file)
+- [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's terraform.tfvars file)
 - Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
 - Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
 - Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
-- Update the [variables.conf](install/variables.conf) file with your planned configuration
+- Update the [terraform.tfvars](terraform/terraform.tfvars) file with your planned configuration
 - Commit the changes back into your private repo
 
-The install process is highly automated and reasonably configurable, leveraging shell scripts and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
+The install process is highly automated and reasonably configurable, leveraging Terraform, shell scripts, and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
 
 
 ## Limitations and Future Considerations
@@ -65,7 +65,6 @@ The install process is highly automated and reasonably configurable, leveraging 
 - There are no performance or availability guarantees. This runs in a single GCP region with a database that has minimal resources to draw from. Since it's immutable, server-side caching isn't possible. Given those constraints, it's surprisingly performant. The weak link is the database server.
 - This implementation could be dramatically improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN, moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql), and providing internal-only connectivity between the Wordpress frontend and the MySQL database through [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 - Multiple SDLC environments aren't supported out of the box. Trunk-based development principles are followed.
-- Improved automation of the install process with Terraform is a long-term objective, but not a short-term priority.
 - Test automation in the CI/CD pipeline and post-deployment verification (with alerting on failure) would further streamline deployments.
 - Creation of a dashboard in the Cloud Operations Suite to measure and alert on usage of the free tier resources is an interesting idea that is yet to be explored.
 - Targeted optimization of MySQL will likely be necessary to best support a more complex site with increasing traffic.
@@ -73,7 +72,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 
 ## Maintenance
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be manually configured and executed. Updates to MySQL also need to be manually applied.
-- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the pipeline to deploy an updated container to the Cloud Run service.
+- Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the app pipeline to deploy an updated container to the Cloud Run service.
 - Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to configuring the new zip file URL).
 
 

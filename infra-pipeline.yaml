@@ -1,0 +1,40 @@
+steps:
+# Step 0: Create the TF state bucket and enable object versioning in an idempotent manner
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    echo "Checking if Terraform state bucket gs://$PROJECT_ID-tfstate/ exists..."
+    if ! [ $(gsutil ls -b gs://$PROJECT_ID-tfstate/) ]
+    then
+      echo "Bucket gs://$PROJECT_ID-tfstate/ doesn't exist"
+      echo "Creating bucket for Terraform state and enabling object versioning"
+      gsutil mb -b on -c standard -l us-east1 gs://$PROJECT_ID-tfstate
+      gsutil versioning set on gs://$PROJECT_ID-tfstate
+    else
+      echo "Bucket gs://$PROJECT_ID-tfstate/ exists; skipping creation"
+      exit 0
+    fi
+# Step 1: Configure the GCP Project ID in the TF files with the default $PROJECT_ID substitution and execute terraform init
+- name: 'hashicorp/terraform:1.0.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
+    cd terraform && terraform init
+# Step 2: Execute terraform plan
+- name: 'hashicorp/terraform:1.0.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd terraform && terraform plan -out=tfplan
+# Step 3: Execute terraform apply
+- name: 'hashicorp/terraform:1.0.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd terraform && terraform apply tfplan
