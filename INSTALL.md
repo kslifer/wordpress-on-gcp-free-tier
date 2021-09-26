@@ -64,7 +64,7 @@ Run the following commands in the Cloud Shell **(replacing the variables with yo
     export MYSQL_VM="mysql-yourdomain-com"
     export ZONE="us-east1-b"
 
-    gcloud compute scp configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
+    gcloud compute scp $GH_REPO/install/configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
 
 This command could fail while the VM creation is propagating across Google Cloud. If it does, try again in a minute.
 
