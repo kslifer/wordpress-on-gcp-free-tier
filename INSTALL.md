@@ -24,17 +24,9 @@ The following commands can be used **(replacing the variables with your configur
 
 
 ### Enable the GCP Service APIs that will be used
- Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid failures that occur on Terraform applies because API enablement is eventually consistent):
+ Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid Terraform failures because API enablement is eventually consistent):
 
-    bash GH_REPO/install/enable_gcp_apis.sh
-
-    gcloud services enable cloudbuild.googleapis.com
-    gcloud services enable cloudresourcemanager.googleapis.com
-    gcloud services enable compute.googleapis.com
-    gcloud services enable run.googleapis.com
-    gcloud services enable osconfig.googleapis.com
-    gcloud services enable artifactregistry.googleapis.com
-    gcloud services enable containeranalysis.googleapis.com
+    bash $GH_REPO/install/enable_gcp_apis.sh
 
 
 ### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
@@ -55,9 +47,9 @@ Run the following commands in the Cloud Shell **(replacing the variables with yo
 
     export GH_USERNAME="username"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
-    export GH_BRANCH="^master$"
+    export GH_BRANCH_PATTERN="^master$"
 
-    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern=${GH_BRANCH} --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
+    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern=${GH_BRANCH_PATTERN} --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
 
 
 ## Provision the GCP Infrastructure
