@@ -17,7 +17,7 @@ run_service = "wp-yourdomain-com"
 # These values MUST be configured (except Branch)
 gh_username = "kslifer" #"username"
 gh_repo     = "wordpress-on-gcp-free-tier" #"wordpress-on-gcp-free-tier-yourdomain-com"
-gh_branch   = "^4-dev-terraform$" #"^master$"
+gh_branch   = "^#4-dev-terraform$" #"^master$"
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured
