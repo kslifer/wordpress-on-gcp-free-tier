@@ -16,7 +16,7 @@ Clone your private repo into your working Cloud Shell directory. This will requi
 The following commands can be used **(replacing the variables with your configuration)**:
 
     export GH_USERNAME="your_username"
-    export GH_TOKEN="token"
+    export GH_TOKEN="your_token"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH="master"
 
@@ -24,7 +24,7 @@ The following commands can be used **(replacing the variables with your configur
 
 
 ### Enable the GCP Service APIs that will be used
- Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid Terraform failures because API enablement is eventually consistent):
+ Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid Terraform failures due to API enablement being eventually consistent):
 
     bash $GH_REPO/install/enable_gcp_apis.sh
 
@@ -45,7 +45,7 @@ In the Cloud Console, follow steps [in this article](https://cloud.google.com/cl
 ## Configure the Infra Pipeline
 Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure a trigger for the Terraform CI/CD pipeline:
 
-    export GH_USERNAME="username"
+    export GH_USERNAME="your_username"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH_PATTERN="^master$"
 
@@ -61,6 +61,7 @@ The build process can be monitored in the Cloud Console at the [Cloud Build Hist
 ## Transfer configuration script to the MySQL VM
 Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export MYSQL_VM="mysql-yourdomain-com"
     export ZONE="us-east1-b"
 
@@ -71,6 +72,9 @@ This command could fail while the VM creation is propagating across Google Cloud
 
 ## MySQL VM Configuration
 Run the following commands in the Cloud Shell to SSH into the MySQL VM:
+
+    export MYSQL_VM="mysql-yourdomain-com"
+    export ZONE="us-east1-b"
 
     gcloud compute ssh ${MYSQL_VM} --tunnel-through-iap --zone=$ZONE
 
