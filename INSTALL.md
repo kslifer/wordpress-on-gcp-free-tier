@@ -43,13 +43,31 @@ In the Cloud Console, follow steps [in this article](https://cloud.google.com/cl
 
 
 ## Configure the Infra Pipeline
-Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure a trigger for the Terraform CI/CD pipeline:
+Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure plan and apply triggers for the Terraform CI/CD pipeline.
+
+The plan trigger will run the Terraform workflow through to plan when a commit is made. The apply trigger will run the full Terraform workflow through to apply as a push-button.
 
     export GH_USERNAME="your_username"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH_PATTERN="^master$"
 
-    gcloud beta builds triggers create github --name="github-trigger-infra" --repo-owner=${GH_USERNAME} --repo-name="${GH_REPO}" --branch-pattern=${GH_BRANCH_PATTERN} --included-files="terraform/*, infra-pipeline.yaml" --build-config="infra-pipeline.yaml"
+    gcloud beta builds triggers create github \
+      --name="github-trigger-infra-plan" \
+      --repo-owner=${GH_USERNAME} \
+      --repo-name="${GH_REPO}" \
+      --branch-pattern=${GH_BRANCH_PATTERN} \
+      --included-files="terraform/*, infra-pipeline.yaml" \
+      --build-config="infra-pipeline.yaml" \
+      --substitutions _TF_STEP=plan
+    
+    gcloud beta builds triggers create github \
+      --name="github-trigger-infra-apply" \
+      --repo-owner=${GH_USERNAME} \
+      --repo-name="${GH_REPO}" \
+      --branch-pattern=${GH_BRANCH_PATTERN} \
+      --ignored-files="**" \
+      --build-config="infra-pipeline.yaml" \
+      --substitutions _TF_STEP=apply
 
 
 ## Provision the GCP Infrastructure
