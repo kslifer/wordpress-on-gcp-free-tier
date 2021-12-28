@@ -16,6 +16,10 @@ google-compute-engine-buster-stable main'> /etc/apt/sources.list.d/google-comput
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
 sudo apt-key add -
 
+echo "Starting GCP Cloud Ops Agent install process..."
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
 echo "Starting MySQL install process..."
 sudo apt update
 sudo apt -y upgrade
