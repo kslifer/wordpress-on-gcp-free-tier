@@ -1,1 +1,2 @@
 https://downloads.wordpress.org/plugin/wp-stateless.3.1.1.zip
+https://downloads.wordpress.org/plugin/jetpack.10.7.zip
