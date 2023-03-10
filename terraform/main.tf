@@ -165,6 +165,10 @@ resource "google_cloudbuild_trigger" "app-cicd-trigger" {
     }
   }
 
+  approval_config {
+    approval_required = true 
+  }
+
   substitutions = {
     _ARTIFACT_REPO = var.artifact_repo
     _REGION        = var.region
