@@ -1,1 +1,1 @@
-https://wordpress.org/wordpress-6.3.zip
+https://wordpress.org/wordpress-6.3.1.zip
