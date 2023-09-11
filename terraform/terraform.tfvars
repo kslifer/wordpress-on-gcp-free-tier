@@ -1,5 +1,5 @@
 # These values MUST be configured
-project_id    = "wpft-yourdomain-com"
+project_id    = "wp-yourdomain-com"
 media_bucket  = "media-yourdomain-com"
 artifact_repo = "docker-yourdomain-com"
 

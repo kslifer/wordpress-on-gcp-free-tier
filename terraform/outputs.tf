@@ -10,6 +10,14 @@ output "artifact_repo" {
   value = var.artifact_repo
 }
 
+output "vpc_network" {
+  value = google_compute_network.vpc-network.name
+}
+
+output "vpc_subnet" {
+  value = google_compute_subnetwork.vpc-subnet.name
+}
+
 output "region" {
   value = var.region
 }
@@ -26,8 +34,12 @@ output "run_service" {
   value = var.run_service
 }
 
-output "mysql_vm_ext_ip" {
-  value = google_compute_address.mysql-external-ip.address
+output "run_service_sa" {
+  value = google_service_account.sa-run-service.email
+}
+
+output "mysql_vm_int_ip" {
+  value = google_compute_address.mysql-internal-ip.address
 }
 
 output "gh_username" {
