@@ -11,6 +11,8 @@ Provisioning steps are a combination of bash scripts that wrap [Cloud SDK](https
 ## Environment Setup
 Log into the Cloud Console at https://console.cloud.google.com/, then activate the Cloud Shell interface.
 
+First, ensure that you're logged in to the Google Account that has Owner permissions on the GCP project, and that your Cloud Shell session is configured to the GCP project that you'd like to use by going through the `gcloud init` workflow and verifying or updating the configuration.
+
 Clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
 The following commands can be used **(replacing the variables with your configuration)**:
@@ -28,6 +30,11 @@ The following commands can be used **(replacing the variables with your configur
 
     bash $GH_REPO/install/enable_gcp_apis.sh
 
+### Delete the default VPC network
+ If a new GCP project was created and will only be used to host Wordpress, run the following script in the Cloud Shell to delete the default VPC network and its firewall rules (that are auto-created with a new GCP project):
+
+    bash $GH_REPO/install/delete_default_network.sh
+
 
 ### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
   Run the following commands in the Cloud Shell to update the IAM permissions:
@@ -36,42 +43,61 @@ The following commands can be used **(replacing the variables with your configur
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${PROJECT_NUM}@cloudbuild.gserviceaccount.com" --role='roles/owner'
 
 
-## Install the Cloud Build Github App
-In the Cloud Console, follow steps [in this article](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers).
+## Connect Cloud Build to GitHub
+Run the following commands in the Cloud Shell to create a GitHub connection:
 
-**NOTE: Skip the option to create a sample trigger. Only connect the repository**
+    export REGION="us-east1"
 
+    export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
+    CLOUD_BUILD_SERVICE_AGENT="service-${PROJECT_NUM}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+    gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${CLOUD_BUILD_SERVICE_AGENT}" --role="roles/secretmanager.admin"
+    gcloud builds connections create github github-connection --region=${REGION}
+
+An authorization step via web browser is required. Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) to verify. A manual step will still be required to either install the Cloud Build GitHub App, or to link the connection to an existing installation. When the Status indicator for the connection shows a green check and an **Enabled** status, the setup is complete.
+
+Run the following commands in the Cloud Shell to add the GitHub repository:
+
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
+    export GH_USERNAME="your_username"
+    export GH_REPO_URI="https://github.com/${GH_USERNAME}/${GH_REPO}.git"
+    export REGION="us-east1"
+
+    gcloud builds repositories create ${GH_REPO} --remote-uri=${GH_REPO_URI} --connection=github-connection --region=${REGION}
+
+Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) again to verify. The repository should show up underneath the GitHub connection.
 
 ## Configure the Infra Pipeline
 Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure plan and apply triggers for the Terraform CI/CD pipeline.
 
 The plan trigger will run the Terraform workflow through to plan when a commit is made. The apply trigger will run the full Terraform workflow through to apply as a push-button.
 
-    export GH_USERNAME="your_username"
+    export GH_CONNECTION="github-connection"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH_PATTERN="^master$"
+    export BUILD_CONFIG_FILE="infra-pipeline.yaml"
+    export REGION="us-east1"
 
-    gcloud beta builds triggers create github \
-      --name="github-trigger-infra-plan" \
-      --repo-owner=${GH_USERNAME} \
-      --repo-name="${GH_REPO}" \
-      --branch-pattern=${GH_BRANCH_PATTERN} \
-      --included-files="terraform/*, infra-pipeline.yaml" \
-      --build-config="infra-pipeline.yaml" \
-      --substitutions _TF_STEP=plan
-    
-    gcloud beta builds triggers create github \
-      --name="github-trigger-infra-apply" \
-      --repo-owner=${GH_USERNAME} \
-      --repo-name="${GH_REPO}" \
-      --branch-pattern=${GH_BRANCH_PATTERN} \
-      --ignored-files="**" \
-      --build-config="infra-pipeline.yaml" \
-      --substitutions _TF_STEP=apply
+    gcloud builds triggers create github \
+    --name="github-trigger-infra-plan" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
+    --branch-pattern=${GH_BRANCH_PATTERN} \
+    --build-config="infra-pipeline.yaml" \
+    --region=${REGION} \
+    --included-files="terraform/*, infra-pipeline.yaml" \
+    --substitutions _TF_STEP=plan
+
+    gcloud builds triggers create github \
+    --name="github-trigger-infra-apply" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
+    --branch-pattern=${GH_BRANCH_PATTERN} \
+    --build-config="infra-pipeline.yaml" \
+    --region=${REGION} \
+    --ignored-files="**" \
+    --substitutions _TF_STEP=apply
 
 
 ## Provision the GCP Infrastructure
-Forcing an execution of the infrastructure pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
+The infrastructure pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
 
 The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 

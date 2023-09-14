@@ -53,7 +53,7 @@ But please **do this first**:
 - [Mirror](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) the public origin repo into your own private repo (private is strongly recommended, to safely store your site's terraform.tfvars file)
 - Configure the [theme(s)](https://wordpress.org/themes/) that you intend to use on the site in the wordpress-themes folder
 - Configure the [plugins](https://wordpress.org/plugins/) that you intend to use on the site in the wordpress-plugins folder
-- Create a GCP project to install into, and ensure that your Google Account has the **Owner** IAM Role
+- Create a GCP project to install into with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project), and ensure that your Google Account has the **Owner** IAM Role on this project
 - Update the [terraform.tfvars](terraform/terraform.tfvars) file with your planned configuration
 - Commit the changes back into your private repo
 

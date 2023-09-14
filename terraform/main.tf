@@ -108,7 +108,8 @@ resource "google_compute_firewall" "ingress-mysql-internal" {
 resource "google_compute_address" "mysql-internal-ip" {
   name         = var.mysql_vm
   address_type = "INTERNAL"
-  #  network_tier = "PREMIUM"
+  subnetwork   = google_compute_subnetwork.vpc-subnet.id
+  purpose      = "GCE_ENDPOINT"
 }
 
 # Create compute stack
@@ -184,6 +185,7 @@ resource "google_compute_project_metadata" "vm-manager" {
 # Configure App CI/CD Pipeline Trigger
 resource "google_cloudbuild_trigger" "app-cicd-trigger" {
   name = "github-trigger-app"
+  location = var.region
 
   github {
     owner = var.gh_username
