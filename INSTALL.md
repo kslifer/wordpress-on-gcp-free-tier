@@ -46,11 +46,11 @@ The following commands can be used **(replacing the variables with your configur
 ## Connect Cloud Build to GitHub
 Run the following commands in the Cloud Shell to create a GitHub connection:
 
-    export REGION="us-east1"
-
     export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
     CLOUD_BUILD_SERVICE_AGENT="service-${PROJECT_NUM}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${CLOUD_BUILD_SERVICE_AGENT}" --role="roles/secretmanager.admin"
+    
+    export REGION="us-east1"
     gcloud builds connections create github github-connection --region=${REGION}
 
 An authorization step via web browser is required. Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) to verify. A manual step will still be required to either install the Cloud Build GitHub App, or to link the connection to an existing installation. When the Status indicator for the connection shows a green check and an **Enabled** status, the setup is complete.
@@ -95,6 +95,31 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     --ignored-files="**" \
     --substitutions _TF_STEP=apply
 
+
+## Configure the App Pipeline
+Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure plan and apply triggers for the Cloud Deploy CI/CD pipeline.
+
+
+    export GH_CONNECTION="github-connection"
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
+    export GH_BRANCH_PATTERN="^master$"
+    export BUILD_CONFIG_FILE="app-pipeline.yaml"
+    export REGION="us-east1"
+
+    export ARTIFACT_REPO="docker-yourdomain-com"
+    export RUN_SERVICE="wp-yourdomain-com"
+
+    gcloud builds triggers create github \
+    --name="github-trigger-app" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
+    --branch-pattern=${GH_BRANCH_PATTERN} \
+    --require-approval \
+    --build-config=${BUILD_CONFIG_FILE} \
+    --region=${REGION} \
+    --included-files="**" \
+    --ignored-files="**/*.md,install/variables.conf,diagrams/**" \
+    --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
+    
 
 ## Provision the GCP Infrastructure
 The infrastructure pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.

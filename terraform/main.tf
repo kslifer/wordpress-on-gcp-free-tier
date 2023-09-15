@@ -153,6 +153,8 @@ resource "google_compute_instance" "mysql-vm" {
   network_interface {
     subnetwork = google_compute_subnetwork.vpc-subnet.name
     network_ip = google_compute_address.mysql-internal-ip.address
+    access_config {
+    }
   }
 
   shielded_instance_config {
@@ -180,33 +182,4 @@ resource "google_compute_project_metadata" "vm-manager" {
     enable-guest-attributes = "TRUE"
     enable-osconfig         = "TRUE"
   }
-}
-
-# Configure App CI/CD Pipeline Trigger
-resource "google_cloudbuild_trigger" "app-cicd-trigger" {
-  name = "github-trigger-app"
-  location = var.region
-
-  github {
-    owner = var.gh_username
-    name  = var.gh_repo
-    push {
-      branch = var.gh_branch
-    }
-  }
-
-  approval_config {
-    approval_required = true
-  }
-
-  substitutions = {
-    _ARTIFACT_REPO = var.artifact_repo
-    _REGION        = var.region
-    _RUN_SERVICE   = var.run_service
-  }
-
-  included_files = ["**"]
-  ignored_files  = ["**/*.md", "install/variables.conf", "diagrams/**"]
-
-  filename = "app-pipeline.yaml"
 }
