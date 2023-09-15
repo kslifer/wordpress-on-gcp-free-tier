@@ -117,7 +117,7 @@ Run the following commands in the Cloud Shell **(replacing the variables with yo
     --build-config=${BUILD_CONFIG_FILE} \
     --region=${REGION} \
     --included-files="**" \
-    --ignored-files="**/*.md,install/variables.conf,diagrams/**" \
+    --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
     --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
     
 
