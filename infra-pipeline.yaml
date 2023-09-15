@@ -30,7 +30,7 @@ steps:
   args:
   - '-c'
   - |
-    cd terraform && terraform plan -out=tfplan
+    cd terraform && terraform plan -out=tfplan  --var-file=terraform.tfvars
 # Step 3: Execute terraform apply
 - name: 'hashicorp/terraform:1.5.7'
   entrypoint: 'sh'
@@ -40,7 +40,7 @@ steps:
     echo "_TF_STEP value is ${_TF_STEP}"
     if [ ${_TF_STEP} = "apply" ]
     then
-      cd terraform && terraform apply tfplan
+      cd terraform && terraform apply tfplan  --var-file=terraform.tfvars
     fi
 timeout: 3600s
 options:

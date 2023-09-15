@@ -9,3 +9,4 @@ gcloud services enable osconfig.googleapis.com
 gcloud services enable artifactregistry.googleapis.com
 gcloud services enable containeranalysis.googleapis.com
 gcloud services enable secretmanager.googleapis.com
+gcloud services enable iam.googleapis.com
