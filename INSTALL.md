@@ -151,23 +151,23 @@ Execute the **configure_mysql_vm.sh** script that was copied over:
 
     bash configure_mysql_vm.sh
 
-This script will allocate a memory swap file on the persistent disk, install the GCP OS Config agent, and start the MySQL installer. Interaction is required.
+This script will allocate a memory swap file on the persistent disk, install the GCP OS Config agent, and start the MariaDB installer. Interaction is required.
 
 **NOTE: Write down the password that you create for the 'root' user!**
 
-After the install completes, run `sudo systemctl status mysql` to verify that MySQL is active and operational.
+After the install completes, run `sudo systemctl status mariadb` to verify that MySQL is active and operational.
 
-Now run `mysql_secure_installation` to harden the install:
-- Enter the root password that was set during the install
-- Enter `Y` to setup the validate password plugin
-- Enter `2` for the password strength level
-- Enter `N` to change the root user password at this time
-- Enter `Y` for the rest of the prompts
+Now run `sudo mariadb-secure-installation` to harden the install:
+- Press 'Enter' when asked for the current root password
+- Enter `2` to decline switching to unix_socket authentication
+- Enter `Y` to change the root password
+- Enter `Y` to remove anonymous users
+- Enter `Y` to disallow root login remotely
+- Enter `Y` to remove the test database
+- Enter `Y` to reload privilege tables
 
-Once this process completes, run `mysqladmin -u root -p version` to further verify that MySQL is functional.
-
-To perform the Wordpress-specific configuration of the MySQL database, follow [the official Wordpress support directions](https://wordpress.org/support/article/creating-database-for-wordpress/#using-the-mysql-client):
-- Run `mysql -u root -p` to log in
+To perform the Wordpress-specific configuration of the MySQL database, follow [the official Wordpress support directions](https://developer.wordpress.org/advanced-administration/before-install/creating-database/#using-the-mysql-client) (adapted for MariaDB):
+- Run `mariadb -u root -p` to log in
 - Run `CREATE DATABASE wordpress;` to create the WP database (use whatever value matches your terraform.tfvars)
 - Run `CREATE USER "wordpress"@"%" IDENTIFIED BY "WordPass1234!";` to create the WP username and password (use whatever values match your variable.conf)
 - Run `GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"%";` to assign the permissions (using your WP database name for the first value, and your WP username for the second value)
@@ -176,7 +176,7 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 
 **Note: Write down the WP database name, username and password!**
 
-Run `sudo service mysql restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
+Run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
 
 
 ## Deploy Wordpress
