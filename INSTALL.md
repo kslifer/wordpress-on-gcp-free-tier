@@ -96,8 +96,14 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     --substitutions _TF_STEP=apply
 
 
+## Provision the GCP Infrastructure
+If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the infrastructure pipeline can be executed by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-plan" trigger, followed by the "-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
+
+The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
+
+
 ## Configure the App Pipeline
-Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure plan and apply triggers for the Cloud Deploy CI/CD pipeline.
+After the infrastructure is successfully configured, run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure the Cloud Build CI/CD pipeline for the application.
 
 
     export GH_CONNECTION="github-connection"
@@ -109,6 +115,11 @@ Run the following commands in the Cloud Shell **(replacing the variables with yo
     export ARTIFACT_REPO="docker-yourdomain-com"
     export RUN_SERVICE="wp-yourdomain-com"
 
+    export _RUN_SERVICE_SA="sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com"
+    export _VPC_NETWORK="network"
+    export _VPC_SUBNET="subnet"
+
+
     gcloud builds triggers create github \
     --name="github-trigger-app" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
@@ -119,12 +130,6 @@ Run the following commands in the Cloud Shell **(replacing the variables with yo
     --included-files="**" \
     --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
     --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
-    
-
-## Provision the GCP Infrastructure
-The infrastructure pipeline requires a new commit in one of the Terraform (.tf) files. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
-
-The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
 
 ## Transfer configuration script to the MySQL VM
