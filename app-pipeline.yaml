@@ -55,9 +55,9 @@ substitutions:
   _ARTIFACT_REPO: docker-yourdomain-com # default
   _REGION: us-east1 # default
   _RUN_SERVICE: wp-yourdomain-com # default
-  _RUN_SERVICE_SA: default # not a real default
-  _VPC_NETWORK: default # not a real default
-  _VPC_SUBNET: default # not a real default
+  _RUN_SERVICE_SA: sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com # default
+  _VPC_NETWORK: network # default
+  _VPC_SUBNET: subnet # default
 options:
   dynamicSubstitutions: true
   automapSubstitutions: true
