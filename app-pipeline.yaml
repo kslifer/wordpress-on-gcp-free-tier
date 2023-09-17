@@ -3,8 +3,7 @@ steps:
 - name: 'hashicorp/terraform:1.5.7'
   entrypoint: 'sh'
   args:
-  - '-c'
-  - |
+  script: |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
     cd terraform && terraform init
     terraform output -raw wordpress_table_prefix > ../WORDPRESS_TABLE_PREFIX
@@ -72,3 +71,4 @@ substitutions:
   _RUN_SERVICE_SA: default # not a real default
 options:
   dynamicSubstitutions: true
+  automapSubstitutions: true
