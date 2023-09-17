@@ -9,12 +9,9 @@ steps:
     terraform output -raw wordpress_db_user > ../WORDPRESS_DB_USER
     terraform output -raw wordpress_db_password > ../WORDPRESS_DB_PASSWORD
     terraform output -raw mysql_vm_int_ip > ../MYSQL_VM_INT_IP
-    terraform output -raw vpc_network > ../VPC_NETWORK
-    terraform output -raw vpc_subnet > ../VPC_SUBNET
     terraform output -raw region > ../REGION
     terraform output -raw artifact_repo > ../ARTIFACT_REPO
     terraform output -raw run_service > ../RUN_SERVICE
-    terraform output -raw run_service_sa > ../RUN_SERVICE_SA
     terraform output -raw project_id > ../PROJECT_ID
 # Step 1: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -44,16 +41,8 @@ steps:
   args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged']
 # Step 8: Deploy the image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    cat ./RUN_SERVICE_SA
-    ${_RUN_SERVICE_SA} = "$(cat ./RUN_SERVICE_SA)"
-    echo ${_RUN_SERVICE_SA}
-    gcloud beta run deploy ${_RUN_SERVICE} --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged --region=${_REGION} --max-instances=5 --cpu=1000m --memory=1Gi --platform=managed --allow-unauthenticated --cpu-boost --session-affinity --network=./VPC_NETWORK --subnet=./VPC_SUBNET --vpc-egress=private-ranges-only --service-account=${_RUN_SERVICE_SA} --set-env-vars=WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST
-  #entrypoint: 'gcloud'
-  #args: ['beta', 'run', 'deploy', '${_RUN_SERVICE}', '--image', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '1000m', '--memory', '1Gi', '--platform', 'managed', '--allow-unauthenticated', '--cpu-boost', '--session-affinity', '--network', './VPC_NETWORK', '--subnet', './VPC_SUBNET', '--vpc-egress', 'private-ranges-only', '--service-account', './RUN_SERVICE_SA', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST']
+  entrypoint: 'gcloud'
+  args: ['beta', 'run', 'deploy', '${_RUN_SERVICE}', '--image', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '1000m', '--memory', '1Gi', '--platform', 'managed', '--allow-unauthenticated', '--cpu-boost', '--session-affinity', '--network', '${VPC_NETWORK}', '--subnet', '${VPC_SUBNET}', '--vpc-egress', 'private-ranges-only', '--service-account', '${RUN_SERVICE_SA}', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST']
 # Step 9: Direct traffic to the new version
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
@@ -67,6 +56,8 @@ substitutions:
   _REGION: us-east1 # default
   _RUN_SERVICE: wp-yourdomain-com # default
   _RUN_SERVICE_SA: default # not a real default
+  _VPC_NETWORK: default # not a real default
+  _VPC_SUBNET: default # not a real default
 options:
   dynamicSubstitutions: true
   automapSubstitutions: true
