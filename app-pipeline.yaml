@@ -1,39 +1,36 @@
 steps:
 # Step 0: Extract variables from Terraform
-- name: 'hashicorp/terraform:1.0.7'
-  entrypoint: 'sh'
-  args:
-  - '-c'
-  - |
+- name: 'hashicorp/terraform:1.5.7'
+  script: |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
     cd terraform && terraform init
     terraform output -raw wordpress_table_prefix > ../WORDPRESS_TABLE_PREFIX
     terraform output -raw wordpress_db_name > ../WORDPRESS_DB_NAME
     terraform output -raw wordpress_db_user > ../WORDPRESS_DB_USER
     terraform output -raw wordpress_db_password > ../WORDPRESS_DB_PASSWORD
-    terraform output -raw mysql_vm_ext_ip > ../MYSQL_VM_EXT_IP
+    terraform output -raw mysql_vm_int_ip > ../MYSQL_VM_INT_IP
     terraform output -raw region > ../REGION
     terraform output -raw artifact_repo > ../ARTIFACT_REPO
     terraform output -raw run_service > ../RUN_SERVICE
     terraform output -raw project_id > ../PROJECT_ID
 # Step 1: Prepare Wordpress
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/wordpress.sh']
 # Step 2: Prepare Themes
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/themes.sh']
 # Step 3: Prepare Plugins
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/plugins.sh']
 # Step 4: Apply Customizations
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/customizations.sh']
 # Step 5: Generate Docker Secrets for Wordpress Container
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/secrets.sh']
 # Step 6: Build the custom Wordpress image for Artifact Registry
@@ -43,16 +40,24 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged']
 # Step 8: Deploy the image to Cloud Run
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', '${_RUN_SERVICE}', '--image', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '2000m', '--memory', '2Gi', '--platform', 'managed', '--allow-unauthenticated', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args: ['beta', 'run', 'deploy', '${_RUN_SERVICE}', '--image', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '--region', '${_REGION}', '--max-instances', '5', '--cpu', '1000m', '--memory', '1Gi', '--platform', 'managed', '--allow-unauthenticated', '--cpu-boost', '--session-affinity', '--network', '${_VPC_NETWORK}', '--subnet', '${_VPC_SUBNET}', '--vpc-egress', 'private-ranges-only', '--service-account', '${_RUN_SERVICE_SA}', '--set-env-vars', 'WORDPRESS_TABLE_PREFIX_FILE=/run/secrets/WORDPRESS_TABLE_PREFIX,WORDPRESS_DB_NAME_FILE=/run/secrets/WORDPRESS_DB_NAME,WORDPRESS_DB_USER_FILE=/run/secrets/WORDPRESS_DB_USER,WORDPRESS_DB_PASSWORD_FILE=/run/secrets/WORDPRESS_DB_PASSWORD,WORDPRESS_DB_HOST_FILE=/run/secrets/WORDPRESS_DB_HOST']
 # Step 9: Direct traffic to the new version
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
   args: ['run', 'services', 'update-traffic', '${_RUN_SERVICE}', '--to-latest', '--region', '${_REGION}', '--platform', 'managed']
 # Step 10: Manage Artifact Registry image history
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['./app-pipeline/images.sh']
 substitutions:
   _ARTIFACT_REPO: docker-yourdomain-com # default
   _REGION: us-east1 # default
   _RUN_SERVICE: wp-yourdomain-com # default
+  _RUN_SERVICE_SA: sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com # default
+  _VPC_NETWORK: network # default
+  _VPC_SUBNET: subnet # default
+options:
+  dynamicSubstitutions: true
+  automapSubstitutions: true

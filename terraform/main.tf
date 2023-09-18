@@ -26,6 +26,39 @@ resource "google_artifact_registry_repository" "docker-repo" {
   format        = "DOCKER"
 }
 
+# Create Service Accounts and IAM Roles
+resource "google_service_account" "sa-mysql-vm" {
+  project = var.project_id
+  account_id   = "sa-mysql-vm"
+  display_name = "Service Account for MySQL VM"
+}
+resource "google_project_iam_member" "mysql-vm-log-writer-binding" {
+  project = var.project_id
+  role   = "roles/logging.logWriter"
+  member = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
+}
+resource "google_project_iam_member" "mysql-vm-metric-writer-binding" {
+  project = var.project_id
+  role   = "roles/monitoring.metricWriter"
+  member = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
+}
+
+resource "google_service_account" "sa-run-service" {
+  project = var.project_id
+  account_id   = "sa-run-service"
+  display_name = "Service Account for Cloud Run Service"
+}
+resource "google_project_iam_member" "run-service-log-writer-binding" {
+  project = var.project_id
+  role   = "roles/logging.logWriter"
+  member = "serviceAccount:${google_service_account.sa-run-service.email}"
+}
+resource "google_project_iam_member" "run-service-metric-writer-binding" {
+  project = var.project_id
+  role   = "roles/monitoring.metricWriter"
+  member = "serviceAccount:${google_service_account.sa-run-service.email}"
+}
+
 # Create network stack
 resource "google_compute_network" "vpc-network" {
   provider                = google
@@ -36,7 +69,7 @@ resource "google_compute_network" "vpc-network" {
 
 resource "google_compute_subnetwork" "vpc-subnet" {
   name                     = "subnet"
-  ip_cidr_range            = "192.168.1.0/28"
+  ip_cidr_range            = "10.0.0.0/24"
   region                   = var.region
   network                  = google_compute_network.vpc-network.id
   private_ip_google_access = "true"
@@ -59,8 +92,8 @@ resource "google_compute_firewall" "ingress-ssh-iap" {
   }
 }
 
-resource "google_compute_firewall" "ingress-mysql-all" {
-  name      = "allow-mysql-ingress-all"
+resource "google_compute_firewall" "ingress-mysql-internal" {
+  name      = "allow-mysql-ingress"
   network   = google_compute_network.vpc-network.name
   direction = "INGRESS"
 
@@ -69,17 +102,14 @@ resource "google_compute_firewall" "ingress-mysql-all" {
     ports    = ["3306"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
-
-  log_config {
-    metadata = "INCLUDE_ALL_METADATA"
-  }
+  source_ranges = ["10.0.0.0/24"]
 }
 
-resource "google_compute_address" "mysql-external-ip" {
+resource "google_compute_address" "mysql-internal-ip" {
   name         = var.mysql_vm
-  address_type = "EXTERNAL"
-  network_tier = "PREMIUM"
+  address_type = "INTERNAL"
+  subnetwork   = google_compute_subnetwork.vpc-subnet.id
+  purpose      = "GCE_ENDPOINT"
 }
 
 # Create compute stack
@@ -114,7 +144,7 @@ resource "google_compute_instance" "mysql-vm" {
   boot_disk {
     auto_delete = "false"
     initialize_params {
-      image = "debian-cloud/debian-10"
+      image = "debian-cloud/debian-12"
       size  = "30"
       type  = "pd-standard"
     }
@@ -122,8 +152,8 @@ resource "google_compute_instance" "mysql-vm" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.vpc-subnet.name
+    network_ip = google_compute_address.mysql-internal-ip.address
     access_config {
-      nat_ip = google_compute_address.mysql-external-ip.address
     }
   }
 
@@ -132,6 +162,7 @@ resource "google_compute_instance" "mysql-vm" {
   }
 
   service_account {
+    email  = google_service_account.sa-mysql-vm.email
     scopes = ["cloud-platform"]
   }
 
@@ -151,31 +182,4 @@ resource "google_compute_project_metadata" "vm-manager" {
     enable-guest-attributes = "TRUE"
     enable-osconfig         = "TRUE"
   }
-}
-
-# Configure App CI/CD Pipeline Trigger
-resource "google_cloudbuild_trigger" "app-cicd-trigger" {
-  name = "github-trigger-app"
-
-  github {
-    owner = var.gh_username
-    name  = var.gh_repo
-    push {
-      branch = var.gh_branch
-    }
-  }
-
-  approval_config {
-    approval_required = true 
-  }
-
-  substitutions = {
-    _ARTIFACT_REPO = var.artifact_repo
-    _REGION        = var.region
-    _RUN_SERVICE   = var.run_service
-  }
-
-  included_files = ["Dockerfile", "wordpress-*/*", "app-pipeline.yaml"]
-
-  filename = "app-pipeline.yaml"
 }
