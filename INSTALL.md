@@ -181,7 +181,9 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 
 **Note: Write down the WP database name, username and password!**
 
-Run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
+Run `sudo sed -i s/127.0.0.1/0.0.0.0/g /etc/mysql/mariadb.conf.d/50-server.cnf` to allow remote connections to the database.
+
+Then run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
 
 
 ## Deploy Wordpress
