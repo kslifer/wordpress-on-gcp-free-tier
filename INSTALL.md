@@ -74,7 +74,6 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     export GH_CONNECTION="github-connection"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH_PATTERN="^master$"
-    export BUILD_CONFIG_FILE="infra-pipeline.yaml"
     export REGION="us-east1"
 
     gcloud builds triggers create github \
@@ -97,9 +96,9 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
 
 
 ## Provision the GCP Infrastructure
-If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the infrastructure pipeline can be executed by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-plan" trigger, followed by the "-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
+If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the infrastructure pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-plan" trigger, followed by the "-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
 
-The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
+The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
 
 ## Configure the App Pipeline
@@ -109,7 +108,6 @@ After the infrastructure is successfully configured, run the following commands 
     export GH_CONNECTION="github-connection"
     export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
     export GH_BRANCH_PATTERN="^master$"
-    export BUILD_CONFIG_FILE="app-pipeline.yaml"
     export REGION="us-east1"
 
     export ARTIFACT_REPO="docker-yourdomain-com"
@@ -125,7 +123,7 @@ After the infrastructure is successfully configured, run the following commands 
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
     --branch-pattern=${GH_BRANCH_PATTERN} \
     --require-approval \
-    --build-config=${BUILD_CONFIG_FILE} \
+    --build-config="app-pipeline.yaml" \
     --region=${REGION} \
     --included-files="**" \
     --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
@@ -183,13 +181,13 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 
 Run `sudo sed -i s/127.0.0.1/0.0.0.0/g /etc/mysql/mariadb.conf.d/50-server.cnf` to allow remote connections to the database.
 
-Then run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
+Finally, run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
 
 
 ## Deploy Wordpress
-Forcing an execution of the application pipeline requires a new commit in one of the Wordpress folders. This can be as simple as committing a newline, simply to kickstart the first run of the pipeline.
+The application pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-app" trigger. Otherwise, committing a change will trigger the pipeline.
 
-The build process can be monitored in the Cloud Console at the [Cloud Build History](https://console.cloud.google.com/cloud-build/builds) page.
+The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
 After the build successfully completes, navigate to [Cloud Run](https://console.cloud.google.com/run). If there's a service with a green check, the deployment was successful. Navigate into the service and click the **run.app** service URL. If you see the Wordpress setup screen, the install process has run successfully and the Wordpress frontend is connecting to the MySQL database!
 
