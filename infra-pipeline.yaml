@@ -42,5 +42,6 @@ steps:
 timeout: 3600s
 options:
   dynamic_substitutions: true
+  automapSubstitutions: true
 substitutions:
   _TF_STEP: plan
