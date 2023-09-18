@@ -115,9 +115,9 @@ After the infrastructure is successfully configured, run the following commands 
     export ARTIFACT_REPO="docker-yourdomain-com"
     export RUN_SERVICE="wp-yourdomain-com"
 
-    export _RUN_SERVICE_SA="sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com"
-    export _VPC_NETWORK="network"
-    export _VPC_SUBNET="subnet"
+    export RUN_SERVICE_SA="sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com"
+    export VPC_NETWORK="network"
+    export VPC_SUBNET="subnet"
 
 
     gcloud builds triggers create github \
@@ -129,7 +129,7 @@ After the infrastructure is successfully configured, run the following commands 
     --region=${REGION} \
     --included-files="**" \
     --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
-    --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE}
+    --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE},_RUN_SERVICE_SA=${RUN_SERVICE_SA},_VPC_NETWORK=${VPC_NETWORK},_VPC_SUBNET=${VPC_SUBNET}
 
 
 ## Transfer configuration script to the MySQL VM
@@ -174,7 +174,7 @@ Now run `sudo mariadb-secure-installation` to harden the install:
 To perform the Wordpress-specific configuration of the MySQL database, follow [the official Wordpress support directions](https://developer.wordpress.org/advanced-administration/before-install/creating-database/#using-the-mysql-client) (adapted for MariaDB):
 - Run `mariadb -u root -p` to log in
 - Run `CREATE DATABASE wordpress;` to create the WP database (use whatever value matches your terraform.tfvars)
-- Run `CREATE USER "wordpress"@"%" IDENTIFIED BY "WordPass1234!";` to create the WP username and password (use whatever values match your variable.conf)
+- Run `CREATE  USER "wordpress"@"%" IDENTIFIED VIA mysql_native_password USING PASSWORD("WordPass1234!");` to create the WP username and password (use whatever values match your variable.conf)
 - Run `GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"%";` to assign the permissions (using your WP database name for the first value, and your WP username for the second value)
 - Run `FLUSH PRIVILEGES;`
 - Run `EXIT`
