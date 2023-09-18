@@ -1,10 +1,8 @@
 steps:
 # Step 0: Create the TF state bucket and enable object versioning in an idempotent manner
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-  entrypoint: 'sh'
-  args:
-  - '-c'
-  - |
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  script: |
     echo "Checking if Terraform state bucket gs://$PROJECT_ID-tfstate/ exists..."
     if ! [ $(gsutil ls -b gs://$PROJECT_ID-tfstate/) ]
     then
