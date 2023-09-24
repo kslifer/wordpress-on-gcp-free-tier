@@ -16,23 +16,23 @@ steps:
 # Step 1: Prepare Wordpress
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/wordpress.sh']
+  args: ['./wordpress-pipeline/wordpress.sh']
 # Step 2: Prepare Themes
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/themes.sh']
+  args: ['./wordpress-pipeline/themes.sh']
 # Step 3: Prepare Plugins
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/plugins.sh']
+  args: ['./wordpress-pipeline/plugins.sh']
 # Step 4: Apply Customizations
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/customizations.sh']
+  args: ['./wordpress-pipeline/customizations.sh']
 # Step 5: Generate Docker Secrets for Wordpress Container
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/secrets.sh']
+  args: ['./wordpress-pipeline/secrets.sh']
 # Step 6: Build the custom Wordpress image for Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_RUN_SERVICE}:staged', '.']
@@ -50,14 +50,14 @@ steps:
 # Step 10: Manage Artifact Registry image history
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['./app-pipeline/images.sh']
+  args: ['./wordpress-pipeline/images.sh']
 substitutions:
-  _ARTIFACT_REPO: docker-yourdomain-com # default
+  _ARTIFACT_REPO: docker-yourdomain-yourtld # default
   _REGION: us-east1 # default
-  _RUN_SERVICE: wp-yourdomain-com # default
-  _RUN_SERVICE_SA: sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com # default
-  _VPC_NETWORK: network # default
-  _VPC_SUBNET: subnet # default
+  _RUN_SERVICE: wp-yourdomain-yourtld # default
+  _RUN_SERVICE_SA: sa-run-service@wp-yourdomain-yourtld.iam.gserviceaccount.com # default
+  _VPC_NETWORK: wp-network # default
+  _VPC_SUBNET: wp-subnet # default
 options:
   dynamicSubstitutions: true
   automapSubstitutions: true

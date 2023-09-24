@@ -7,7 +7,6 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
-echo "Starting GCP OS Agent install process..."
 sudo apt update
 sudo apt -y upgrade
 

@@ -1,5 +1,5 @@
 # Wordpress on GCP Free Tier
-How to run a self-hosted Wordpress site almost entirely within the [free tier](https://cloud.google.com/free#always-free-products_1) of GCP services. Domain name not included.
+How to run a self-hosted Wordpress site almost entirely within the [free tier](https://cloud.google.com/free/docs/free-cloud-features#free-tier-usage-limits) of GCP services. Domain name not included.
 
 
 ## Table of Contents
@@ -22,12 +22,12 @@ Compute, data, and media are separated and distributed, with the Wordpress front
 
 The free tier monthly usage budgets of these services that this solution aims to stay within are:
 - **Cloud Run**: 2m Requests / 360k GB Seconds / 180k vCPU Seconds / 1 GB Network Egress
-- **Compute Engine**: 1 e2-micro Instance / 30 GB HDD Disk / 1 GB Network Egress / 5 GB Snapshot Storage
-- **Cloud Storage**: 5 GB Standard Storage / 5k Class A Ops / 50k Class B Ops / 1 GB Network Egress
+- **Compute Engine**: 1 e2-micro Instance / 30 GB HDD Disk / 1 GB Network Egress
+- **Cloud Storage**: 5 GB Standard Storage / 5k Class A Ops / 50k Class B Ops / 100 GB Network Egress
 
 
 ### Wordpress Frontend
-The management of the Wordpress frontend follows modern DevOps principles. The Apache/PHP/Wordpress stack is built and deployed as an immutable Docker image, which then executes in Cloud Run in a stateless, serverless, scale-to-zero model. The CI/CD pipeline is fully automated from a build trigger on the GitHub repo, guaranteeing that the repo will always be the source of truth for the Wordpress frontend. Hand-rolled modifications to Wordpress files that are either unavoidable or desired can be injected into the [customizations.sh](app-pipeline/customizations.sh) file, which is executed in the pipeline.
+The management of the Wordpress frontend follows modern DevOps principles. The Apache/PHP/Wordpress stack is built and deployed as an immutable Docker image, which then executes in Cloud Run in a stateless, serverless, scale-to-zero model. The CI/CD pipeline is fully automated from a build trigger on the GitHub repo, guaranteeing that the repo will always be the source of truth for the Wordpress frontend. Hand-rolled modifications to Wordpress files that are either unavoidable or desired can be injected into the [customizations.sh](wordpress-pipeline/customizations.sh) file, which is executed in the pipeline.
 
 The biggest consideration in this model is the cold start, or the amount of pre-processing time required in a new container before it can process requests. Early testing showed that the suggested model of copying custom Wordpress themes/plugins into the source directory (/usr/src/wordpress) of the image so they can then be copied into the Apache directory (/var/www/html) along with the Wordpress core on container initialization was extremely inefficient, resulting in cold starts that were consistently taking over 15 seconds.
 
@@ -39,7 +39,7 @@ The approach to the MySQL database follows a traditional hosting model, with it 
 
 MySQL isn't prescriptive on resource requirements, because it will depend on the database size and transactional volume that need to be supported. Performance has been optimized by provisioning the largest persistent disk possible within the free tier (30 GB HDD) to maximize the IOPS budget, then allocating a 1 GB swap file to relieve memory pressure. The fractional CPU is still a bottleneck, but the whole platform stood up to quite a bit of [Apache Bench](https://httpd.apache.org/docs/2.4/programs/ab.html) load testing. For a site that will receive a modest amount of traffic, it's sufficient.
 
-The install process configures daily snapshots of the persistent disk with a 3 day retention policy, eliminating the need for a Wordpress plugin to perform site backups.
+The install process configures weekly snapshots of the persistent disk with a 7 day retention policy, eliminating the need for a Wordpress plugin to perform site backups.
 
 
 ### Wordpress Media
@@ -65,7 +65,7 @@ The install process is highly automated and reasonably configurable, leveraging 
 - This implementation could be improved by upgrading the Wordpress frontend to a multi-region [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/setting-up-serverless-negs) with Global HTTPS Load Balancing / CDN and moving the MySQL database into [Cloud SQL](https://cloud.google.com/sql/docs/mysql). It would deviate from the free tier objective, but would better align to production-grade cloud architecture practices.
 - The MySQL VM has an external IP address to allow for package updates to be obtained from the internet without needing to implement a NAT/proxy solution, which would deviate from the free tier objective. All inbound connectivity from the public internet to the MySQL VM is denied.
 - Multiple SDLC environments aren't supported out of the box.
-- Test automation in the CI/CD pipeline and post-deployment verification (with alerting on failure) would further streamline deployments.
+- Test automation in the CI/CD pipeline and post-deployment verification (with alerting on failure) would be nice to have.
 - Creation of a dashboard in the Cloud Operations Suite to measure and alert on usage of the free tier resources is an interesting idea that is yet to be explored.
 - Targeted optimization of MySQL will likely be necessary to best support a more complex site with increasing traffic.
 

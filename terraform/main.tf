@@ -28,47 +28,47 @@ resource "google_artifact_registry_repository" "docker-repo" {
 
 # Create Service Accounts and IAM Roles
 resource "google_service_account" "sa-mysql-vm" {
-  project = var.project_id
-  account_id   = "sa-mysql-vm"
+  project      = var.project_id
+  account_id   = var.mysql_vm_sa
   display_name = "Service Account for MySQL VM"
 }
 resource "google_project_iam_member" "mysql-vm-log-writer-binding" {
   project = var.project_id
-  role   = "roles/logging.logWriter"
-  member = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
 }
 resource "google_project_iam_member" "mysql-vm-metric-writer-binding" {
   project = var.project_id
-  role   = "roles/monitoring.metricWriter"
-  member = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.sa-mysql-vm.email}"
 }
 
 resource "google_service_account" "sa-run-service" {
-  project = var.project_id
-  account_id   = "sa-run-service"
+  project      = var.project_id
+  account_id   = var.run_service_sa
   display_name = "Service Account for Cloud Run Service"
 }
 resource "google_project_iam_member" "run-service-log-writer-binding" {
   project = var.project_id
-  role   = "roles/logging.logWriter"
-  member = "serviceAccount:${google_service_account.sa-run-service.email}"
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.sa-run-service.email}"
 }
 resource "google_project_iam_member" "run-service-metric-writer-binding" {
   project = var.project_id
-  role   = "roles/monitoring.metricWriter"
-  member = "serviceAccount:${google_service_account.sa-run-service.email}"
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.sa-run-service.email}"
 }
 
 # Create network stack
 resource "google_compute_network" "vpc-network" {
   provider                = google
-  name                    = "network"
+  name                    = var.vpc_network
   auto_create_subnetworks = "false"
   routing_mode            = "GLOBAL"
 }
 
 resource "google_compute_subnetwork" "vpc-subnet" {
-  name                     = "subnet"
+  name                     = var.vpc_subnet
   ip_cidr_range            = "10.0.0.0/24"
   region                   = var.region
   network                  = google_compute_network.vpc-network.id
@@ -118,18 +118,20 @@ resource "google_compute_resource_policy" "snapshot-schedule" {
   region = var.region
   snapshot_schedule_policy {
     schedule {
-      daily_schedule {
-        days_in_cycle = 1
-        start_time    = "04:00"
+      weekly_schedule {
+        day_of_weeks {
+          day        = "SUNDAY"
+          start_time = "04:00"
+        }
       }
     }
     retention_policy {
-      max_retention_days    = 3
-      on_source_disk_delete = "KEEP_AUTO_SNAPSHOTS"
+      max_retention_days    = 7
+      on_source_disk_delete = "APPLY_RETENTION_POLICY"
     }
     snapshot_properties {
       storage_locations = [var.region]
-      guest_flush       = "true"
+      guest_flush       = "false"
     }
   }
 }

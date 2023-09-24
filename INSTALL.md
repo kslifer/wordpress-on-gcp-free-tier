@@ -13,30 +13,36 @@ Log into the Cloud Console at https://console.cloud.google.com/, then activate t
 
 First, ensure that you're logged in to the Google Account that has Owner permissions on the GCP project, and that your Cloud Shell session is configured to the GCP project that you'd like to use by going through the `gcloud init` workflow and verifying or updating the configuration.
 
-Clone your private repo into your working Cloud Shell directory. This will require creating a [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
+Clone your private repo into your working Cloud Shell directory. This will require creating a (classic) [Personal Access Token](https://github.com/settings/tokens) with OATH scope to "repo" (the first checkbox).
 
-The following commands can be used **(replacing the variables with your configuration)**:
+The following commands can be used **(with your details substituted)**:
 
     export GH_USERNAME="your_username"
-    export GH_TOKEN="your_token"
-    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
+    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-yourtld"
     export GH_BRANCH="master"
-
+    export GH_TOKEN="your_token"
+    
     git clone https://${GH_USERNAME}:${GH_TOKEN}@github.com/${GH_USERNAME}/${GH_REPO}.git -b ${GH_BRANCH}
+    cd $GH_REPO
 
+
+### Load Terraform variables into the environment
+Run the following script in the Cloud Shell to load the variables defined in **terraform.tfvars** into the environment for reuse:
+
+    source ./install/load_environment_vars.sh
 
 ### Enable the GCP Service APIs that will be used
  Run the following script in the Cloud Shell to enable the required APIs (this is done to avoid Terraform failures due to API enablement being eventually consistent):
 
-    bash $GH_REPO/install/enable_gcp_apis.sh
+    bash ./install/enable_gcp_apis.sh
 
 ### Delete the default VPC network
- If a new GCP project was created and will only be used to host Wordpress, run the following script in the Cloud Shell to delete the default VPC network and its firewall rules (that are auto-created with a new GCP project):
+ If a new GCP project was created and will only be used to host Wordpress, run the following script in the Cloud Shell to delete the default VPC network and its firewall rules that are auto-created with a new GCP project. If these resources weren't created or were already deleted, the gcloud commands will throw errors that can be ignored.
 
-    bash $GH_REPO/install/delete_default_network.sh
+    bash ./install/delete_default_network.sh
 
 
-### Elevate permissions for the Cloud Build SA so it can act on behalf of the infra and app pipelines
+### Elevate permissions for the Cloud Build SA so it can act on behalf of the Terraform and Wordpress pipelines
   Run the following commands in the Cloud Shell to update the IAM permissions:
  
     export PROJECT_NUM=$(gcloud projects list --filter="$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)")
@@ -50,94 +56,67 @@ Run the following commands in the Cloud Shell to create a GitHub connection:
     CLOUD_BUILD_SERVICE_AGENT="service-${PROJECT_NUM}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member="serviceAccount:${CLOUD_BUILD_SERVICE_AGENT}" --role="roles/secretmanager.admin"
     
-    export REGION="us-east1"
-    gcloud builds connections create github github-connection --region=${REGION}
+    gcloud builds connections create github github-connection --region=${region}
 
 An authorization step via web browser is required. Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) to verify. A manual step will still be required to either install the Cloud Build GitHub App, or to link the connection to an existing installation. When the Status indicator for the connection shows a green check and an **Enabled** status, the setup is complete.
 
-Run the following commands in the Cloud Shell to add the GitHub repository:
+Run the following command in the Cloud Shell to add the GitHub repository:
 
-    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
-    export GH_USERNAME="your_username"
-    export GH_REPO_URI="https://github.com/${GH_USERNAME}/${GH_REPO}.git"
-    export REGION="us-east1"
-
-    gcloud builds repositories create ${GH_REPO} --remote-uri=${GH_REPO_URI} --connection=github-connection --region=${REGION}
+    gcloud builds repositories create ${gh_repo} --remote-uri="https://github.com/${gh_username}/${gh_repo}.git" --connection=github-connection --region=${region}
 
 Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) again to verify. The repository should show up underneath the GitHub connection.
 
-## Configure the Infra Pipeline
-Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure plan and apply triggers for the Terraform CI/CD pipeline.
+## Configure the Terraform Pipelines
+Run the following commands in the Cloud Shell to configure plan and apply triggers for the Terraform CI/CD pipeline.
 
 The plan trigger will run the Terraform workflow through to plan when a commit is made. The apply trigger will run the full Terraform workflow through to apply as a push-button.
 
-    export GH_CONNECTION="github-connection"
-    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
-    export GH_BRANCH_PATTERN="^master$"
-    export REGION="us-east1"
-
     gcloud builds triggers create github \
-    --name="github-trigger-infra-plan" \
-    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
-    --branch-pattern=${GH_BRANCH_PATTERN} \
-    --build-config="infra-pipeline.yaml" \
-    --region=${REGION} \
-    --included-files="terraform/*, infra-pipeline.yaml" \
+    --name="terraform-plan" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
+    --branch-pattern="^${gh_branch}$" \
+    --build-config="terraform-pipeline.yaml" \
+    --region=${region} \
+    --included-files="terraform/*, terraform-pipeline.yaml" \
     --substitutions _TF_STEP=plan
 
     gcloud builds triggers create github \
-    --name="github-trigger-infra-apply" \
-    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
-    --branch-pattern=${GH_BRANCH_PATTERN} \
-    --build-config="infra-pipeline.yaml" \
-    --region=${REGION} \
+    --name="terraform-apply" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
+    --branch-pattern="^${gh_branch}$" \
+    --build-config="terraform-pipeline.yaml" \
+    --region=${region} \
     --ignored-files="**" \
     --substitutions _TF_STEP=apply
 
 
 ## Provision the GCP Infrastructure
-If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the infrastructure pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-plan" trigger, followed by the "-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
+If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the Terraform pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "terraform-plan" trigger, followed by the "terraform-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
 
 The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
+If the build won't execute with an error message **Failed to trigger build: failed precondition: due to quota restrictions, cannot run builds in this region. Please contact support**, it's because the quota "Concurrent Build CPUs (Regional Public Pool) per region per build_origin" has a default value of 0 and an increase needs to be requested (which takes several days to be addressed). This appears to be a problem with the second generation GitHub connector.
+
 
 ## Configure the App Pipeline
-After the infrastructure is successfully configured, run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to configure the Cloud Build CI/CD pipeline for the application.
-
-
-    export GH_CONNECTION="github-connection"
-    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
-    export GH_BRANCH_PATTERN="^master$"
-    export REGION="us-east1"
-
-    export ARTIFACT_REPO="docker-yourdomain-com"
-    export RUN_SERVICE="wp-yourdomain-com"
-
-    export RUN_SERVICE_SA="sa-run-service@wp-yourdomain-com.iam.gserviceaccount.com"
-    export VPC_NETWORK="network"
-    export VPC_SUBNET="subnet"
-
+After the infrastructure is successfully configured, run the following command in the Cloud Shell to configure the Cloud Build CI/CD pipeline for the application.
 
     gcloud builds triggers create github \
-    --name="github-trigger-app" \
-    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${REGION}/connections/${GH_CONNECTION}/repositories/${GH_REPO} \
-    --branch-pattern=${GH_BRANCH_PATTERN} \
+    --name="wordpress-build-deploy" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
+    --branch-pattern="^${gh_branch}$" \
     --require-approval \
-    --build-config="app-pipeline.yaml" \
-    --region=${REGION} \
+    --build-config="wordpress-pipeline.yaml" \
+    --region=${region} \
     --included-files="**" \
     --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
-    --substitutions _ARTIFACT_REPO=${ARTIFACT_REPO},_REGION=${REGION},_RUN_SERVICE=${RUN_SERVICE},_RUN_SERVICE_SA=${RUN_SERVICE_SA},_VPC_NETWORK=${VPC_NETWORK},_VPC_SUBNET=${VPC_SUBNET}
+    --substitutions _ARTIFACT_REPO=${artifact_repo},_REGION=${region},_RUN_SERVICE=${run_service},_RUN_SERVICE_SA=${run_service_sa}@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com,_VPC_NETWORK=${vpc_network},_VPC_SUBNET=${vpc_subnet}
 
 
 ## Transfer configuration script to the MySQL VM
-Run the following commands in the Cloud Shell **(replacing the variables with your configuration)** to copy the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
+Run the following command in the Cloud Shell to transfer the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
 
-    export GH_REPO="wordpress-on-gcp-free-tier-yourdomain-com"
-    export MYSQL_VM="mysql-yourdomain-com"
-    export ZONE="us-east1-b"
-
-    gcloud compute scp $GH_REPO/install/configure_mysql_vm.sh ${MYSQL_VM}:~ --zone=$ZONE --tunnel-through-iap
+    gcloud compute scp ./install/configure_mysql_vm.sh ${mysql_vm}:~ --zone=$zone --tunnel-through-iap --quiet
 
 This command could fail while the VM creation is propagating across Google Cloud. If it does, try again in a minute.
 
@@ -145,16 +124,13 @@ This command could fail while the VM creation is propagating across Google Cloud
 ## MySQL VM Configuration
 Run the following commands in the Cloud Shell to SSH into the MySQL VM:
 
-    export MYSQL_VM="mysql-yourdomain-com"
-    export ZONE="us-east1-b"
-
-    gcloud compute ssh ${MYSQL_VM} --tunnel-through-iap --zone=$ZONE
+    gcloud compute ssh ${mysql_vm} --tunnel-through-iap --zone=$zone
 
 Execute the **configure_mysql_vm.sh** script that was copied over:
 
     bash configure_mysql_vm.sh
 
-This script will allocate a memory swap file on the persistent disk, install the GCP OS Config agent, and start the MariaDB installer. Interaction is required.
+This script will allocate a memory swap file on the persistent disk, install the GCP Cloud Ops agent, and start the MariaDB installer. Interaction is required. **Note: The initial apt-upgrade may take 5-10 minutes, but will run successfully. Have patience.**
 
 **NOTE: Write down the password that you create for the 'root' user!**
 
@@ -162,8 +138,8 @@ After the install completes, run `sudo systemctl status mariadb` to verify that 
 
 Now run `sudo mariadb-secure-installation` to harden the install:
 - Press 'Enter' when asked for the current root password
-- Enter `2` to decline switching to unix_socket authentication
-- Enter `Y` to change the root password
+- Enter `n` to decline switching to unix_socket authentication
+- Enter `Y` to change the root password (then change it)
 - Enter `Y` to remove anonymous users
 - Enter `Y` to disallow root login remotely
 - Enter `Y` to remove the test database
@@ -172,7 +148,7 @@ Now run `sudo mariadb-secure-installation` to harden the install:
 To perform the Wordpress-specific configuration of the MySQL database, follow [the official Wordpress support directions](https://developer.wordpress.org/advanced-administration/before-install/creating-database/#using-the-mysql-client) (adapted for MariaDB):
 - Run `mariadb -u root -p` to log in
 - Run `CREATE DATABASE wordpress;` to create the WP database (use whatever value matches your terraform.tfvars)
-- Run `CREATE  USER "wordpress"@"%" IDENTIFIED VIA mysql_native_password USING PASSWORD("WordPass1234!");` to create the WP username and password (use whatever values match your variable.conf)
+- Run `CREATE USER "wordpress"@"%" IDENTIFIED VIA mysql_native_password USING PASSWORD("WordPass1234!");` to create the WP username and password (use whatever values match your variable.conf)
 - Run `GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"%";` to assign the permissions (using your WP database name for the first value, and your WP username for the second value)
 - Run `FLUSH PRIVILEGES;`
 - Run `EXIT`
@@ -185,7 +161,7 @@ Finally, run `sudo service mariadb restart` to restart the MySQL service, then `
 
 
 ## Deploy Wordpress
-The application pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "-app" trigger. Otherwise, committing a change will trigger the pipeline.
+The application pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button for the "wordpress-build-deploy" trigger. Otherwise, committing a change will trigger the pipeline. The build will need to be approved.
 
 The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
 
