@@ -4,7 +4,7 @@
 set -eEuo pipefail
 
 # copy and run the download script
-cp ./app-pipeline/download.sh ./wordpress-plugins
+cp ./wordpress-pipeline/download.sh ./wordpress-plugins
 cd wordpress-plugins
 chmod +x download.sh
 ./download.sh

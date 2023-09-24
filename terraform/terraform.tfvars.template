@@ -1,22 +1,32 @@
 # These values MUST be configured
-project_id    = "wp-yourdomain-com"
-media_bucket  = "media-yourdomain-com"
-artifact_repo = "docker-yourdomain-com"
+project_id    = "wp-yourdomain-yourtld"
+media_bucket  = "media-yourdomain-yourtld"
+artifact_repo = "docker-yourdomain-yourtld"
 
 # Google Cloud Resource Locations
 # These can be left as-is to run in South Carolina
 region = "us-east1"
 zone   = "us-east1-b"
 
+# Google Cloud Network Names
+# These can be left as-is to use the defaults
+vpc_network = "wp-network"
+vpc_subnet  = "wp-subnet"
+
 # Google Cloud Compute Resource Names
 # These values MUST be configured
-mysql_vm    = "mysql-yourdomain-com"
-run_service = "wp-yourdomain-com"
+mysql_vm    = "mariadb-yourdomain-yourtld"
+run_service = "wpsvc-yourdomain-yourtld"
+
+# Google Cloud Service Accounts
+# These can be left as-is to use the defaults
+mysql_vm_sa    = "sa-mariadb-yourdomain-yourtld"
+run_service_sa = "sa-wpsvc-yourdomain-yourtld"
 
 # GitHub Username, Repo, and Branch
 # These values MUST be configured (except Branch)
 gh_username = "your_username"
-gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-com"
+gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-yourtld"
 gh_branch   = "^master$"
 
 # Wordpress Configuration

@@ -25,6 +25,19 @@ variable "zone" {
   default     = "us-east1-b"
 }
 
+# Google Cloud Network Names
+# These can be left as-is to use the defaults
+variable "vpc_network" {
+  description = "VPC Network"
+  type        = string
+  default     = "wp-network"
+}
+variable "vpc_subnet" {
+  description = "VPC Subnet"
+  type        = string
+  default     = "wp-subnet"
+}
+
 # Google Cloud Compute Resource Names
 # These values MUST be configured
 variable "mysql_vm" {
@@ -33,6 +46,17 @@ variable "mysql_vm" {
 }
 variable "run_service" {
   description = "Cloud Run Service"
+  type        = string
+}
+
+# Google Cloud Compute Service Account Names
+# These values MUST be configured
+variable "mysql_vm_sa" {
+  description = "MySQL VM Service Account"
+  type        = string
+}
+variable "run_service_sa" {
+  description = "Cloud Run Service Account"
   type        = string
 }
 

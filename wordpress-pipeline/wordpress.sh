@@ -4,19 +4,16 @@
 set -eEuo pipefail
 
 # copy and run the download script
-cp ./app-pipeline/download.sh ./wordpress-themes
-cd wordpress-themes
+cp ./wordpress-pipeline/download.sh ./wordpress-core
+cd wordpress-core
 chmod +x download.sh
 ./download.sh
 cd ..
 
-# remove default themes
-rm -r ./wordpress-core/wordpress/wp-content/themes/*
-
-# unpack custom themes
+# unpack wordpress
 apt-get update
 apt-get install -y unzip
-cd wordpress-themes
+cd wordpress-core
 for zip in *.zip
 do
     dirname=`echo $zip | sed 's/\.zip$//'`
@@ -25,8 +22,6 @@ do
     if cd "$dirname-temp"
     then
         unzip ../"$zip"
-        # Remove '__MACOSX' directory
-        rm -rf ./__MACOSX
         mv * ..
         cd ..
         rm -f $zip
