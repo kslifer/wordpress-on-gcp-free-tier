@@ -75,8 +75,8 @@ resource "google_compute_subnetwork" "vpc-subnet" {
   private_ip_google_access = "true"
 }
 
-resource "google_compute_firewall" "ingress-ssh-iap" {
-  name      = "allow-ssh-ingress-from-iap"
+resource "google_compute_firewall" "allow-iap-ssh-ingress" {
+  name      = "allow-iap-ssh-ingress"
   network   = google_compute_network.vpc-network.name
   direction = "INGRESS"
 
