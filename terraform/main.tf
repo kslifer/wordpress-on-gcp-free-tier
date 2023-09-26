@@ -113,8 +113,8 @@ resource "google_compute_address" "mysql-internal-ip" {
 }
 
 # Create compute stack
-resource "google_compute_resource_policy" "snapshot-schedule" {
-  name   = "snapshot-schedule"
+resource "google_compute_resource_policy" "snapshot-schedule-weekly" {
+  name   = "snapshot-schedule-weekly"
   region = var.region
   snapshot_schedule_policy {
     schedule {
@@ -173,7 +173,7 @@ resource "google_compute_instance" "mysql-vm" {
 }
 
 resource "google_compute_disk_resource_policy_attachment" "mysql-backup" {
-  name = google_compute_resource_policy.snapshot-schedule.name
+  name = google_compute_resource_policy.snapshot-schedule-weekly.name
   disk = google_compute_instance.mysql-vm.name
   zone = var.zone
 }
