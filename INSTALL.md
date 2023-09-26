@@ -66,7 +66,7 @@ Run the following command in the Cloud Shell to add the GitHub repository:
 
 Once the connection is established, load the [Repositories Page](https://console.cloud.google.com/cloud-build/repositories/) again to verify. The repository should show up underneath the GitHub connection.
 
-## Configure the Terraform Pipelines
+## Configure the Terraform and Wordpress Pipelines
 Run the following commands in the Cloud Shell to configure plan and apply triggers for the Terraform CI/CD pipeline.
 
 The plan trigger will run the Terraform workflow through to plan when a commit is made. The apply trigger will run the full Terraform workflow through to apply as a push-button.
@@ -89,17 +89,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     --ignored-files="**" \
     --substitutions _TF_STEP=apply
 
-
-## Provision the GCP Infrastructure
-If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the Terraform pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "terraform-plan" trigger, followed by the "terraform-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
-
-The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
-
-If the build won't execute with an error message **Failed to trigger build: failed precondition: due to quota restrictions, cannot run builds in this region. Please contact support**, it's because the quota "Concurrent Build CPUs (Regional Public Pool) per region per build_origin" has a default value of 0 and an increase needs to be requested (which takes several days to be addressed). This appears to be a problem with the second generation GitHub connector.
-
-
-## Configure the App Pipeline
-After the infrastructure is successfully configured, run the following command in the Cloud Shell to configure the Cloud Build CI/CD pipeline for the application.
+Run the following command in the Cloud Shell to configure the Cloud Build CI/CD pipeline for the Wordpress frontend.
 
     gcloud builds triggers create github \
     --name="wordpress-build-deploy" \
@@ -111,6 +101,14 @@ After the infrastructure is successfully configured, run the following command i
     --included-files="**" \
     --ignored-files="**/*.md,install/variables.conf,diagrams/**,terraform/**" \
     --substitutions _ARTIFACT_REPO=${artifact_repo},_REGION=${region},_RUN_SERVICE=${run_service},_RUN_SERVICE_SA=${run_service_sa}@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com,_VPC_NETWORK=${vpc_network},_VPC_SUBNET=${vpc_subnet}
+
+
+## Provision the GCP Infrastructure
+If all of the Terraform configuration changes and project-specific terraform.tvfars file has been committed to the GitHub repository, the Terraform pipeline can be executed by going to the [Triggers Page](https://console.cloud.google.com/cloud-build/triggers;region=us-east1) and clicking on the **Run** button in the "terraform-plan" trigger, followed by the "terraform-apply" trigger. Otherwise, committing the latest changes will trigger the pipeline.
+
+The build process can be monitored in the Cloud Console at the [Build History](https://console.cloud.google.com/cloud-build/builds) page.
+
+If the build won't execute with an error message **Failed to trigger build: failed precondition: due to quota restrictions, cannot run builds in this region. Please contact support**, it's because the quota "Concurrent Build CPUs (Regional Public Pool) per region per build_origin" has a default value of 0 and an increase needs to be requested (which takes several days to be addressed). This appears to be a problem with the second generation GitHub connector.
 
 
 ## Transfer configuration script to the MySQL VM
