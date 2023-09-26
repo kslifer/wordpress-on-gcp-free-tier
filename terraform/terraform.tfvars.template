@@ -1,7 +1,7 @@
 # These values MUST be configured
 project_id    = "wp-yourdomain-yourtld"
 media_bucket  = "media-yourdomain-yourtld"
-artifact_repo = "docker-yourdomain-yourtld"
+artifact_repo = "wp-docker-yourdomain-yourtld"
 
 # Google Cloud Resource Locations
 # These can be left as-is to run in South Carolina
