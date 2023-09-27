@@ -128,7 +128,7 @@ Execute the **configure_mysql_vm.sh** script that was copied over:
 
     bash configure_mysql_vm.sh
 
-This script will allocate a memory swap file on the persistent disk, install the GCP Cloud Ops agent, and start the MariaDB installer. Interaction is required. **Note: The initial apt-upgrade may take 5-10 minutes, but will run successfully. Have patience.**
+This script will allocate a memory swap file on the persistent disk, install the GCP Cloud Ops agent and MariaDB, then apply server configuration changes to MariaDB. **Note: The initial apt-upgrade may take 5-10 minutes, but will run successfully. Have patience.**
 
 **NOTE: Write down the password that you create for the 'root' user!**
 
@@ -152,10 +152,6 @@ To perform the Wordpress-specific configuration of the MySQL database, follow [t
 - Run `EXIT`
 
 **Note: Write down the WP database name, username and password!**
-
-Run `sudo sed -i s/127.0.0.1/0.0.0.0/g /etc/mysql/mariadb.conf.d/50-server.cnf` to allow remote connections to the database.
-
-Finally, run `sudo service mariadb restart` to restart the MySQL service, then `exit` to exit the SSH session with the VM and return to the Cloud Shell session.
 
 
 ## Deploy Wordpress

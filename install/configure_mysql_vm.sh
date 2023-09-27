@@ -16,3 +16,8 @@ sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
 echo "Starting MariaDB install process..."
 sudo apt -y install mariadb-server
+
+echo "Applying post-MariaDB install configuration changes..."
+sudo sed -i s/127.0.0.1/0.0.0.0/g /etc/mysql/mariadb.conf.d/50-server.cnf
+sudo sed -i s/#skip-name-resolve/skip-name-resolve=on/g /etc/mysql/mariadb.conf.d/50-server.cnf
+sudo service mariadb restart
