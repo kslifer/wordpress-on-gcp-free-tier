@@ -89,6 +89,17 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     --ignored-files="**" \
     --substitutions _TF_STEP=apply
 
+**Optionally** run the following command in the Cloud Shell to configure an import trigger. This trigger will run Terraform import as a push-button, and can be used to bring resources in the environment under Terraform control by following [these guidelines](https://cloud.google.com/docs/terraform/resource-management/import#import-resources-one-at-a-time). The default behavior of this trigger is to import the media bucket, to support the migration from pre-Terraform versions of this project.
+
+    gcloud builds triggers create github \
+    --name="terraform-import" \
+    --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
+    --branch-pattern="^${gh_branch}$" \
+    --build-config="terraform-import.yaml" \
+    --region=${region} \
+    --ignored-files="**" \
+    --substitutions _MEDIA_BUCKET=${media_bucket}
+
 Run the following command in the Cloud Shell to configure the Cloud Build CI/CD pipeline for the Wordpress frontend.
 
     gcloud builds triggers create github \

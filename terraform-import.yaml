@@ -1,0 +1,38 @@
+steps:
+# Step 0: Create the TF state bucket and enable object versioning in an idempotent manner
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  script: |
+    echo "Checking if Terraform state bucket gs://$PROJECT_ID-tfstate/ exists..."
+    if ! [ $(gsutil ls -b gs://$PROJECT_ID-tfstate/) ]
+    then
+      echo "Bucket gs://$PROJECT_ID-tfstate/ doesn't exist"
+      echo "Creating bucket for Terraform state and enabling object versioning"
+      gsutil mb -b on -c standard -l us-east1 gs://$PROJECT_ID-tfstate
+      gsutil versioning set on gs://$PROJECT_ID-tfstate
+    else
+      echo "Bucket gs://$PROJECT_ID-tfstate/ exists; skipping creation"
+      exit 0
+    fi
+# Step 1: Configure the GCP Project ID in the TF files with the default $PROJECT_ID substitution and execute terraform init
+- name: 'hashicorp/terraform:1.5.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
+    cd terraform && terraform init
+# Step 2: Execute terraform import
+- name: 'hashicorp/terraform:1.5.7'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd terraform
+    terraform import google_storage_bucket.media-bucket $PROJECT_ID/${_MEDIA_BUCKET}
+    terraform import google_storage_bucket_access_control.public-media-rule ${_MEDIA_BUCKET}/allUsers
+timeout: 3600s
+options:
+  dynamic_substitutions: true
+  automapSubstitutions: true
+substitutions:
+  _MEDIA_BUCKET: media-yourdomain-yourtld #default

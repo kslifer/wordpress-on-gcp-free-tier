@@ -4,10 +4,6 @@ resource "google_storage_bucket" "media-bucket" {
   name          = var.media_bucket
   location      = var.region
   storage_class = "STANDARD"
-
-  versioning {
-    enabled = "true"
-  }
 }
 
 resource "google_storage_bucket_access_control" "public-media-rule" {
