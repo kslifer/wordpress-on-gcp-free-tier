@@ -74,7 +74,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     gcloud builds triggers create github \
     --name="terraform-plan" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="^${gh_branch}$" \
+    --branch-pattern="${gh_branch}" \
     --build-config="terraform-pipeline.yaml" \
     --region=${region} \
     --included-files="terraform/*, terraform-pipeline.yaml" \
@@ -83,7 +83,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     gcloud builds triggers create github \
     --name="terraform-apply" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="^${gh_branch}$" \
+    --branch-pattern="${gh_branch}" \
     --build-config="terraform-pipeline.yaml" \
     --region=${region} \
     --ignored-files="**" \
@@ -94,7 +94,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     gcloud builds triggers create github \
     --name="terraform-import" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="^${gh_branch}$" \
+    --branch-pattern="${gh_branch}" \
     --build-config="terraform-import.yaml" \
     --region=${region} \
     --ignored-files="**" \
@@ -105,7 +105,7 @@ Run the following command in the Cloud Shell to configure the Cloud Build CI/CD 
     gcloud builds triggers create github \
     --name="wordpress-build-deploy" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="^${gh_branch}$" \
+    --branch-pattern="${gh_branch}" \
     --require-approval \
     --build-config="wordpress-pipeline.yaml" \
     --region=${region} \
