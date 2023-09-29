@@ -5,7 +5,8 @@ How to run a self-hosted Wordpress site almost entirely within the [free tier](h
 ## Table of Contents
 - [Architecture](#architecture)
 - [Overview](#overview)
-- [Installation](#installation)
+- [New Installation](#new-installation)
+- [Migrating from V1 → V2](#migrating-from-v1--v2)
 - [Limitations and Future Considerations](#limitations-and-future-considerations)
 - [Maintenance](#maintenance)
 - [License](#license)
@@ -18,7 +19,7 @@ How to run a self-hosted Wordpress site almost entirely within the [free tier](h
 ## Overview
 The core software components are the Wordpress [LAMP stack](https://en.wikipedia.org/wiki/LAMP_(software_bundle)).
 
-Compute, data, and media are separated and distributed, with the Wordpress frontend running in a [Cloud Run](https://cloud.google.com/run) service, the MySQL database running on a [Compute Engine](https://cloud.google.com/compute) VM, and Wordpress media being stored in and served from a [Cloud Storage](https://cloud.google.com/storage) bucket.
+Compute, data, and media are separated and distributed, with the Wordpress frontend running in a [Cloud Run](https://cloud.google.com/run) service, the MariaDB database running on a [Compute Engine](https://cloud.google.com/compute) VM, and Wordpress media being stored in and served from a [Cloud Storage](https://cloud.google.com/storage) bucket.
 
 The free tier monthly usage budgets of these services that this solution aims to stay within are:
 - **Cloud Run**: 2m Requests / 360k GB Seconds / 180k vCPU Seconds / 1 GB Network Egress
@@ -34,10 +35,10 @@ The biggest consideration in this model is the cold start, or the amount of pre-
 The cold start has been optimized by baking the part of the [Docker Entrypoint](https://github.com/docker-library/wordpress/blob/master/docker-entrypoint.sh) process that copies the Wordpress core and custom themes/plugins into the Apache directory into the image itself. The upstream Wordpress image declares the Apache directory as a volume, so the only way to achieve this is to ignore the Wordpress core that's inside the Docker image and copy in the same files from the repo during the build process. Docker allows copying external files into a volume, but not files that are inside the image. This adds some complexity, but reduces the cold start to about 2 seconds. It also plays within the logic of the Docker Entrypoint - this step will simply be skipped because the files already exist in the Apache directory.
 
 
-### MySQL Database
-The approach to the MySQL database follows a traditional hosting model, with it sitting on a long-running e2-micro instance. The e2-micro is Google Cloud's smallest VM instance class that is offered in the free tier, with 1 GB memory and 0.25 vCPU that can occasionally burst to 2 full cores.
+### MariaDB Database
+The approach to the MariaDB database follows a traditional hosting model, with it sitting on a long-running e2-micro instance. The e2-micro is Google Cloud's smallest VM instance class that is offered in the free tier, with 1 GB memory and 0.25 vCPU that can occasionally burst to 2 full cores.
 
-MySQL isn't prescriptive on resource requirements, because it will depend on the database size and transactional volume that need to be supported. Performance has been optimized by provisioning the largest persistent disk possible within the free tier (30 GB HDD) to maximize the IOPS budget, then allocating a 1 GB swap file to relieve memory pressure. The fractional CPU is still a bottleneck, but the whole platform stood up to quite a bit of [Apache Bench](https://httpd.apache.org/docs/2.4/programs/ab.html) load testing. For a site that will receive a modest amount of traffic, it's sufficient.
+MariaDB isn't prescriptive on resource requirements, because it will depend on the database size and transactional volume that need to be supported. Performance has been optimized by provisioning the largest persistent disk possible within the free tier (30 GB HDD) to maximize the IOPS budget, then allocating a 1 GB swap file to relieve memory pressure. The fractional CPU is still a bottleneck, but the whole platform stood up to quite a bit of [Apache Bench](https://httpd.apache.org/docs/2.4/programs/ab.html) load testing. For a site that will receive a modest amount of traffic, it's sufficient.
 
 The install process configures weekly snapshots of the persistent disk with a 7 day retention policy, eliminating the need for a Wordpress plugin to perform site backups.
 
@@ -46,7 +47,7 @@ The install process configures weekly snapshots of the persistent disk with a 7 
 Media storage and request processing is offloaded to Cloud Storage through the [WP Stateless](https://wordpress.org/plugins/wp-stateless/) plugin. This compliments the immutable nature of the Wordpress frontend (where media would be stored in a traditional hosting model), and instead leverages a Google-managed service that provides durability, performance, and unlimited capacity.
 
 
-## Installation
+## New Installation
 Head on over to the [Install Guide](INSTALL.md) for step by step instructions.
 
 But please **do this first**:
@@ -59,6 +60,9 @@ But please **do this first**:
 - Commit the changes back into your private repo
 
 The install process is highly automated and reasonably configurable, leveraging Terraform, shell scripts, and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
+
+## Migrating from V1 → V2
+If you're using "Version 1" of this solution (not formally versioned, but characterized as without Terraform-managed infrastructure and with MySQL instead of MariaDB), check out the [Migration Guide](migration/MIGRATION.md) for assistance on deploying and migrating to the latest version that was released in September 2023.
 
 
 ## Limitations and Future Considerations
