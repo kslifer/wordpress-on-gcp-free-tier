@@ -2,8 +2,8 @@
 This guide outlines the steps to migrate from older versions of the solution to the latest that was released in September 2023.
 
 This solution is continously evolving, so not all "older versions" will be the same. An "older version" implies:
- - Not having Terraform-managed infrastructure
- - Using MySQL for the DB
+ - Not having Terraform-managed infrastructure.
+ - Using MySQL for the DB.
 
 The September 2023 release was implemented in a way that would provide a migration path from earlier versions within the same host GCP project:
  - GCP resource names have been altered to allow both old and new versions to co-exist, with the exception of the GCS bucket that hosts website media. Changing the name of the media bucket would impact the website. As a result, this resource needs to be imported to Terraform state, and automation is provided to accomplish this.
@@ -57,8 +57,8 @@ The September 2023 release was implemented in a way that would provide a migrati
 - Resume the standard [install procedure](https://github.com/kslifer/wordpress-on-gcp-free-tier/blob/master/INSTALL.md#transfer-configuration-script-to-the-mariadb-vm) at the step where the MariaDB VM is configured, up to the `sudo mariadb-secure-installation` step. **DO NOT CREATE THE DATABASE OR USERNAME.**
 - While in the same SSH session to the MariaDB VM, run `mariadb -u root -p < wp_db_backup.sql` to import the DB backup. The root password that was just set will need to be provided.
 - Run `mariadb -u root -p`, then `show databases;` to verify that the **wordpress** database was successfully imported and exists.
-- While in the same SSH session to the MariaDB VM, follow the last steps in [MariaDB VM Configuration](https://github.com/kslifer/wordpress-on-gcp-free-tier/blob/master/INSTALL.md#mysql-vm-configuration) to recreate the same user and password in use by your existing site.
-- Manually run the **wordpress-build-deploy** Cloud Build job to deploy your new Wordpress frontend service. Click the vanity Cloud Run URL to verify that your site loads - if it does, the new service can successfully connect to the new MariaDB to read your data.
+- While in the same MariaDB session, follow the last steps in [MariaDB VM Configuration](https://github.com/kslifer/wordpress-on-gcp-free-tier/blob/master/INSTALL.md#mysql-vm-configuration) to recreate the same user and password in use by your existing site.
+- Manually run the **wordpress-build-deploy** Cloud Build job to deploy your new Wordpress frontend service. Click the vanity Cloud Run URL to verify that your site loads - if it does, the new service can successfully connect to the new MariaDB databse and read your site's data.
 - Perform a cutover by following the steps in [Map Your Domain to Cloud Run](https://github.com/kslifer/wordpress-on-gcp-free-tier/blob/master/INSTALL.md#map-your-domain-to-cloud-run). If you're using the native Cloud Run domain mapping, the process only involves deleting the existing mappings and configuring new mappings to your new Cloud Run service (wpsvc-yourdomain-yourtld). DNS entries don't need to be updated, but your website will go through a temporary outage as the new Cloud Run domain mappings propagate.
 - At this point, the old MySQL VM can be stopped to manage cost - and to confirm that all traffic is using the new site deployment and MariaDB database.
 
@@ -71,4 +71,4 @@ Once the migration is complete and your site is validated, take the final steps 
  - Commit the changes to the migration branch, then merge the migration branch back into master.
  - Validate that all four pipelines run successfully.
 
-## Resource Teardown
+## Old Resource Teardown
