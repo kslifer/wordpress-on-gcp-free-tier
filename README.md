@@ -61,7 +61,7 @@ But please **do this first**:
 The install process is highly automated and reasonably configurable, leveraging Terraform, shell scripts, and `gcloud` commands as much as possible. Going from an empty GCP project to a base Wordpress install can be accomplished in less than an hour.
 
 ## Migrating from V1 → V2
-If you're using "Version 1" of this solution (not formally versioned, but characterized as without Terraform-managed infrastructure and with MySQL instead of MariaDB), check out the [Migration Guide](MIGRATION.md) for assistance on deploying and migrating to the latest version that was released in September 2023.
+If you're using "Version 1" of this solution (not formally versioned, but characterized as without Terraform-managed infrastructure and with MySQL instead of MariaDB), check out the [Migration Guide](migration/MIGRATION.md) for assistance on deploying and migrating to the latest version that was released in September 2023.
 
 
 ## Limitations and Future Considerations
