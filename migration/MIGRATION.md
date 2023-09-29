@@ -72,3 +72,14 @@ Once the migration is complete and your site is validated, take the final steps 
  - Validate that all four pipelines run successfully.
 
 ## Old Resource Teardown
+The final step of the migration is to tear down all of the old infrastructure. This can be done manually in the Cloud Console.
+
+There are some dependencies in the deletion of resources; I recommend this sequence:
+ - The **github-trigger** Cloud Build trigger (Region is global).
+ - The 1st Gen Cloud Build repository link (Region is global).
+ - The **docker-yourdomain-yourtld** Artifact Registry.
+ - The **wp-yourdomain-yourtld** Cloud Run Service.
+ - The **mysql-yourdomain-yourtold** GCE instance, and the associated Persistent Disk with the same name.
+ - The **snapshot-schedule** snapshot schedule that was attached to the MySQL VM, and any associated historical disk snapshots.
+ - The **mysql-yourdomain-yourtold** reserved internal IP address, which should show as not being in use.
+ - The **network** VPC, which will in turn delete the associated subnet and firewall rules.
