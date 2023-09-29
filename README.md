@@ -5,7 +5,8 @@ How to run a self-hosted Wordpress site almost entirely within the [free tier](h
 ## Table of Contents
 - [Architecture](#architecture)
 - [Overview](#overview)
-- [Installation](#installation)
+- [New Installation](#new-installation)
+- [Migrating from V1 → V2](#migrating-from-v1--v2)
 - [Limitations and Future Considerations](#limitations-and-future-considerations)
 - [Maintenance](#maintenance)
 - [License](#license)
