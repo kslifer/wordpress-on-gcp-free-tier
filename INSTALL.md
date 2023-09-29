@@ -122,16 +122,16 @@ The build process can be monitored in the Cloud Console at the [Build History](h
 If the build won't execute with an error message **Failed to trigger build: failed precondition: due to quota restrictions, cannot run builds in this region. Please contact support**, it's because the quota "Concurrent Build CPUs (Regional Public Pool) per region per build_origin" has a default value of 0 and an increase needs to be requested (which takes several days to be addressed). This appears to be a problem with the second generation GitHub connector.
 
 
-## Transfer configuration script to the MySQL VM
-Run the following command in the Cloud Shell to transfer the **configure_mysql_vm.sh** script out to the MySQL VM, so it can be run there:
+## Transfer configuration script to the MariaDB VM
+Run the following command in the Cloud Shell to transfer the **configure_mysql_vm.sh** script out to the MariaDB VM, so it can be run there:
 
     gcloud compute scp ./install/configure_mysql_vm.sh ${mysql_vm}:~ --zone=$zone --tunnel-through-iap --quiet
 
 This command could fail while the VM creation is propagating across Google Cloud. If it does, try again in a minute.
 
 
-## MySQL VM Configuration
-Run the following commands in the Cloud Shell to SSH into the MySQL VM:
+## MariaDB VM Configuration
+Run the following commands in the Cloud Shell to SSH into the MariaDB VM:
 
     gcloud compute ssh ${mysql_vm} --tunnel-through-iap --zone=$zone
 
