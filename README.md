@@ -76,6 +76,10 @@ If you're using "Version 1" of this solution (not formally versioned, but charac
 
 
 ## Maintenance
+- The [Terraform](https://developer.hashicorp.com/terraform/downloads) and [Google Provider](https://registry.terraform.io/providers/hashicorp/google/latest) versions should be kept reasonably current. A version upgrade involves updating the [versions.tf](terraform/versions.tf) file, and the pipelines that use a Terraform Google Cloud builder image (listed below). A Terraform plan/apply cycle needs to be performed, and the Wordpress site needs  to be deployed and validated.
+  - [terraform-pipeline.yaml](terraform-pipeline.yaml)
+  - [terraform-import.yaml](terraform-import.yaml)
+  - [wordpress-pipeline.yaml](wordpress-pipeline.yaml)
 - The MySQL VM needs to occasionally be patched. The OS Patch Management service is configured, but patch deployment jobs need to be manually configured and executed. Updates to MariaDB also need to be manually applied.
 - Since the Wordpress frontend is immutable, updates to the Wordpress core, themes, and plugins are disabled and need to be performed through the CI/CD pipeline instead of the Wordpress Dashboard. This requires occasionally configuring the new zip file URLs, then triggering the app pipeline to deploy an updated container to the Cloud Run service.
 - Updates to the Wordpress core require a change to the Dockerfile to pull the new upstream image (in addition to configuring the new zip file URL).
