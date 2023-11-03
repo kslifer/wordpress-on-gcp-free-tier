@@ -179,7 +179,7 @@ Cloud Run supports mapping a custom domain directly to a service, with a fully m
 If your domain is registered through [Google Domains](https://domains.google/), this setup process is very simple. If not, some additional steps will be required to verify domain ownership that are outside of the scope of these instructions.
 
 Some notes on DNS updates:
-- Separate entried are required for [yourdomain.com](https://yourdomain.com) and [www.yourdomain.com](https://www.yourdomain.com) (as a subdomain) in order for both to successfully load
+- Separate entries are required for [yourdomain.com](https://yourdomain.com) and [www.yourdomain.com](https://www.yourdomain.com) (as a subdomain) in order for both to successfully load
 - Multiple A and AAA DNS records are provided; they should each be consolidated into single A and AAA entries
 - A separate "www" CNAME mapping will be provided to perform the www redirect
 
