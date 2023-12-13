@@ -1,1 +1,1 @@
-https://wordpress.org/wordpress-6.4.1.zip
+https://wordpress.org/wordpress-6.4.2.zip
