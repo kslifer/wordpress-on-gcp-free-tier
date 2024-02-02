@@ -1,6 +1,6 @@
 steps:
 # Step 0: Extract variables from Terraform
-- name: 'hashicorp/terraform:1.6.5'
+- name: 'hashicorp/terraform:1.7.2'
   script: |
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
     cd terraform && terraform init
