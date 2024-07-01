@@ -14,7 +14,7 @@ steps:
       exit 0
     fi
 # Step 1: Configure the GCP Project ID in the TF files with the default $PROJECT_ID substitution and execute terraform init
-- name: 'hashicorp/terraform:1.7.5'
+- name: 'hashicorp/terraform:1.9.0'
   entrypoint: 'sh'
   args:
   - '-c'
@@ -22,14 +22,14 @@ steps:
     sed -i s/KEY_PROJECT_ID/$PROJECT_ID/g terraform/backend.tf
     cd terraform && terraform init
 # Step 2: Execute terraform plan
-- name: 'hashicorp/terraform:1.7.5'
+- name: 'hashicorp/terraform:1.9.0'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
     cd terraform && terraform plan -out=tfplan --var-file=terraform.tfvars
 # Step 3: Execute terraform apply
-- name: 'hashicorp/terraform:1.7.5'
+- name: 'hashicorp/terraform:1.9.0'
   entrypoint: 'sh'
   args:
   - '-c'
