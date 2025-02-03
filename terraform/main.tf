@@ -56,6 +56,11 @@ resource "google_project_iam_member" "run-service-metric-writer-binding" {
 }
 
 # Create network stack
+resource "google_compute_project_default_network_tier" "project-tier" {
+  project      = var.project_id
+  network_tier = "STANDARD"
+}
+
 resource "google_compute_network" "vpc-network" {
   provider                = google
   name                    = var.vpc_network
@@ -152,6 +157,7 @@ resource "google_compute_instance" "mysql-vm" {
     subnetwork = google_compute_subnetwork.vpc-subnet.name
     network_ip = google_compute_address.mysql-internal-ip.address
     access_config {
+        network_tier = "STANDARD"
     }
   }
 
