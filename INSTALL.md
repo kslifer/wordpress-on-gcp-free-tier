@@ -196,6 +196,10 @@ Basic observability can be achieved through the following:
 - MySQL VM metrics can be viewed in the Cloud Console on the Monitoring tab of the [Compute Engine instance](https://console.cloud.google.com/compute/instances)
 
 
+## Configure an Artifact Registry Cleanup Policy
+As of February 2025, the `images.sh` script doesn't properly maintain the Docker image history because of a known gcloud issue with the `--filter="tags=''"` argument. The alternative is to configure a Cleanup Policy by navigating to the [Artifact Registry](https://console.cloud.google.com/artifacts) page, selecting and editing the repository, then adding a Conditional Delete Cleanup Policy for images with an "Untagged" Tag State. The policy runs on an unspecified schedule and is eventually consistent. This isn't currently supported in Terraform and must be manually configured in the Cloud Console.
+
+
 ## Configure Wordpress
 At this point, it's safe to nevigate to [www.yourdomain.com](https://www.yourdomain.com) in a web browser and run through the five minute Wordpress setup.
 
