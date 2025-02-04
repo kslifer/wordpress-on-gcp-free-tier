@@ -83,7 +83,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     gcloud builds triggers create manual \
     --name="terraform-apply" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="${gh_branch}" \
+    --branch=${gh_branch} \
     --build-config="terraform-pipeline.yaml" \
     --region=${region} \
     --no-require-approval \
@@ -94,7 +94,7 @@ The plan trigger will run the Terraform workflow through to plan when a commit i
     gcloud builds triggers create manual \
     --name="terraform-import" \
     --repository=projects/$GOOGLE_CLOUD_PROJECT/locations/${region}/connections/github-connection/repositories/${gh_repo} \
-    --branch-pattern="${gh_branch}" \
+    --branch=${gh_branch} \
     --build-config="terraform-import.yaml" \
     --region=${region} \
     --no-require-approval \
