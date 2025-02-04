@@ -27,7 +27,7 @@ run_service_sa = "sa-wpsvc-yourdomain-yourtld"
 # These values MUST be configured (except Branch)
 gh_username = "your_username"
 gh_repo     = "wordpress-on-gcp-free-tier-yourdomain-yourtld"
-gh_branch   = "^master$"
+gh_branch   = "master"
 
 # Wordpress Configuration
 # The table prefix can be left as-is, but DB values MUST be configured

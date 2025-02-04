@@ -65,7 +65,7 @@ The September 2023 release was implemented in a way that would provide a migrati
 
 ## Post-Migration Merge
 Once the migration is complete and your site is validated, take the final steps below to re-establish normal operating procedures in the master branch:
- - Update the **gh_branch** value to "^master$" in terraform.tfvars of the migration branch.
+ - Update the **gh_branch** value to "master" in terraform.tfvars of the migration branch.
  - Delete the **variables.conf** file from the migration branch (it's superseded by terraform.tfvars).
  - Manually update the four [Cloud Build triggers](https://console.cloud.google.com/cloud-build/triggers) to use the master branch instead of the migration branch.
  - Commit the changes to the migration branch, then merge the migration branch back into master.

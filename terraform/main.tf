@@ -15,7 +15,7 @@ resource "google_storage_bucket_access_control" "public-media-rule" {
 
 # Create Artifact Registry Docker Repository
 resource "google_artifact_registry_repository" "docker-repo" {
-  provider      = google-beta
+  provider      = google
   location      = var.region
   repository_id = var.artifact_repo
   description   = "Docker Repository"
